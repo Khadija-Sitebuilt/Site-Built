@@ -24,3 +24,24 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Trust bar marquee animation */
+.trustbar-marquee-container {
+  overflow: hidden;
+}
+
+.trustbar-marquee {
+  display: inline-flex;
+  align-items: center;
+  gap: 0; /* spacing handled by item width/padding so only ~3 show at once */
+  animation: trustbar-marquee 30s linear infinite;
+}
+
+@keyframes trustbar-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

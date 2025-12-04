@@ -1,0 +1,21 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Upload">
+<g id="Group 3">
+<mask id="mask0_0_390" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="6" width="20" height="15">
+<path id="Clip 2" fill-rule="evenodd" clip-rule="evenodd" d="M0 6.794H19.9996V20.538H0V6.794Z" fill="var(--fill-0, white)"/>
+</mask>
+<g mask="url(#mask0_0_390)">
+<path id="Fill 1" fill-rule="evenodd" clip-rule="evenodd" d="M15.565 20.538H4.435C1.99 20.538 0 18.549 0 16.103V11.228C0 8.783 1.99 6.794 4.435 6.794H5.368C5.782 6.794 6.118 7.13 6.118 7.544C6.118 7.958 5.782 8.294 5.368 8.294H4.435C2.816 8.294 1.5 9.61 1.5 11.228V16.103C1.5 17.722 2.816 19.038 4.435 19.038H15.565C17.183 19.038 18.5 17.722 18.5 16.103V11.219C18.5 9.606 17.188 8.294 15.576 8.294H14.633C14.219 8.294 13.883 7.958 13.883 7.544C13.883 7.13 14.219 6.794 14.633 6.794H15.576C18.015 6.794 20 8.779 20 11.219V16.103C20 18.549 18.01 20.538 15.565 20.538" fill="var(--fill-0, #2563EB)"/>
+</g>
+</g>
+<g id="Group 6">
+<mask id="mask1_0_390" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="9" y="0" width="2" height="14">
+<path id="Clip 5" fill-rule="evenodd" clip-rule="evenodd" d="M9.2496 0H10.7496V13.5409H9.2496V0Z" fill="var(--fill-0, white)"/>
+</mask>
+<g mask="url(#mask1_0_390)">
+<path id="Fill 4" fill-rule="evenodd" clip-rule="evenodd" d="M9.9996 13.5409C9.5856 13.5409 9.2496 13.2049 9.2496 12.7909V0.7499C9.2496 0.3359 9.5856 -0.000100017 9.9996 -0.000100017C10.4136 -0.000100017 10.7496 0.3359 10.7496 0.7499V12.7909C10.7496 13.2049 10.4136 13.5409 9.9996 13.5409" fill="var(--fill-0, #2563EB)"/>
+</g>
+</g>
+<path id="Fill 7" fill-rule="evenodd" clip-rule="evenodd" d="M7.0846 4.4286C6.8936 4.4286 6.7016 4.3556 6.5556 4.2096C6.2626 3.9176 6.2606 3.4436 6.5536 3.1496L9.4686 0.2216C9.7496 -0.0614001 10.2496 -0.0614001 10.5306 0.2216L13.4466 3.1496C13.7386 3.4436 13.7376 3.9176 13.4446 4.2096C13.1506 4.5016 12.6766 4.5016 12.3846 4.2076L9.9996 1.8136L7.6156 4.2076C7.4696 4.3556 7.2766 4.4286 7.0846 4.4286" fill="var(--fill-0, #2563EB)"/>
+</g>
+</svg>
