@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,12 +17,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);
@@ -33,7 +32,8 @@ body {
 .trustbar-marquee {
   display: inline-flex;
   align-items: center;
-  gap: 0; /* spacing handled by item width/padding so only ~3 show at once */
+  gap: 0;
+  /* spacing handled by item width/padding so only ~3 show at once */
   animation: trustbar-marquee 30s linear infinite;
 }
 
@@ -41,6 +41,7 @@ body {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }

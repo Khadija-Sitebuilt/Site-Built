@@ -21,9 +21,9 @@ const testimonials = [
     role: "Project Manager, Skyline Builders",
   },
   {
-    quote: "The floor plan pins make it incredibly easy to walk owners through issues. It’s become a core part of our handover process.",
+    quote: "The floor plan pins make it incredibly easy to walk owners through issues. It's become a core part of our handover process.",
     name: "Priya Singh",
-    role: "Owner’s Rep, UrbanCore",
+    role: "Owner's Rep, UrbanCore",
   },
   {
     quote: "Setup took less than a day and our field teams adopted it immediately. Zero training, huge impact.",
@@ -31,12 +31,12 @@ const testimonials = [
     role: "Field Supervisor, Apex Construction",
   },
   {
-    quote: "SiteBuilt gives us audit-ready documentation without extra work from the team. It’s a no-brainer for compliance.",
+    quote: "SiteBuilt gives us audit-ready documentation without extra work from the team. It's a no-brainer for compliance.",
     name: "Emma Johnson",
     role: "Quality Manager, NorthBridge Infra",
   },
   {
-    quote: "Before SiteBuilt, tracking photo history across phases was a nightmare. Now it’s just a few clicks.",
+    quote: "Before SiteBuilt, tracking photo history across phases was a nightmare. Now it's just a few clicks.",
     name: "Tom Baker",
     role: "VDC Lead, Meridian Projects",
   },
@@ -67,59 +67,59 @@ export function Testimonials() {
   );
 
   return (
-    <section className="bg-gray-50 box-border flex flex-col gap-20 items-center left-0 px-[120px] py-[112px] w-full">
-      <div className="flex flex-col gap-6 items-start relative shrink-0 w-full">
-        <div className="box-border flex gap-[10px] items-center justify-center px-[437px] py-0 relative shrink-0 w-full">
-          <div className="font-['Inter',sans-serif] font-bold leading-[0] not-italic relative shrink-0 text-[0px] text-center text-neutral-950 tracking-[-0.96px] whitespace-nowrap">
-            <p className="leading-[normal] mb-0 text-[48px]">Trusted by </p>
-            <p className="leading-[normal] text-[48px]">
+    <section className="bg-gray-50 box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center left-0 px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
+      <div className="flex flex-col gap-4 md:gap-6 items-start relative shrink-0 w-full max-w-[1280px] mx-auto">
+        <div className="box-border flex gap-[10px] items-center justify-center px-4 sm:px-0 py-0 relative shrink-0 w-full">
+          <div className="font-['Inter',sans-serif] font-bold leading-[0] not-italic relative shrink-0 text-[0px] text-center text-neutral-950 tracking-[-0.96px]">
+            <p className="leading-[normal] mb-0 text-3xl sm:text-4xl lg:text-5xl">Trusted by </p>
+            <p className="leading-[normal] text-3xl sm:text-4xl lg:text-5xl">
               <span className="font-['Inter',sans-serif] font-normal italic text-green-600 tracking-[-0.96px]">Industry</span>
               <span> Leaders</span>
             </p>
           </div>
         </div>
         <div className="flex items-start relative shrink-0 w-full">
-          <div className="flex-[1_0_0] font-['Arial',sans-serif] leading-[28px] min-h-px min-w-px not-italic relative shrink-0 text-[#717182] text-[20px] text-center whitespace-pre-wrap">
+          <div className="flex-[1_0_0] font-['Arial',sans-serif] leading-[28px] min-h-px min-w-px not-italic relative shrink-0 text-[#717182] text-base md:text-lg lg:text-xl text-center whitespace-pre-wrap">
             <p className="mb-0">Join thousands of construction </p>
             <p>professionals who rely on SiteBuilt</p>
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-8 items-start relative shrink-0 w-full">
+      <div className="flex flex-col gap-6 md:gap-8 items-start relative shrink-0 w-full max-w-[1280px] mx-auto">
         <div className="flex flex-col gap-[10px] items-center relative shrink-0 w-full">
-          <div className="flex gap-12 items-center relative shrink-0 w-full">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-stretch relative shrink-0 w-full">
             {visibleTestimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-white border-[1.333px] border-[rgba(0,0,0,0.1)] border-solid box-border flex flex-[1_0_0] flex-col items-start justify-between min-h-[260px] min-w-px p-[33.333px] relative rounded-[14px] shrink-0"
+                className="bg-white border-[1.333px] border-[rgba(0,0,0,0.1)] border-solid box-border flex flex-col md:flex-[1_0_0] items-start justify-between min-h-[260px] p-6 md:p-8 lg:p-[33.333px] relative rounded-[14px] shrink-0 w-full"
               >
                 <div className="relative shrink-0 w-full">
-                  <div className="flex flex-col gap-4 items-start px-6 py-0 relative w-full">
+                  <div className="flex flex-col gap-3 md:gap-4 items-start px-4 md:px-6 py-0 relative w-full">
                     <div className="flex gap-1 items-center relative shrink-0 w-full">
                       {[...Array(5)].map((_, i) => (
-                        <div key={i} className="relative shrink-0 size-5">
-                          <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                        <div key={i} className="relative shrink-0 size-4 md:size-5">
+                          <Star className="w-4 h-4 md:w-5 md:h-5 text-yellow-400 fill-yellow-400" />
                         </div>
                       ))}
                     </div>
                     <div className="flex gap-[10px] items-center justify-center relative shrink-0 w-full">
-                      <p className="flex-[1_0_0] font-['Arial',sans-serif] leading-[28px] min-h-px min-w-px not-italic relative shrink-0 text-[18px] text-neutral-950 whitespace-pre-wrap">
+                      <p className="flex-[1_0_0] font-['Arial',sans-serif] leading-[28px] min-h-px min-w-px not-italic relative shrink-0 text-sm md:text-base lg:text-lg text-neutral-950 whitespace-pre-wrap">
                         "{testimonial.quote}"
                       </p>
                     </div>
-                    <div className="flex gap-4 h-12 items-center relative shrink-0 w-full">
-                      <div className="bg-[#ececf0] relative rounded-full shrink-0 size-12 flex items-center justify-center">
-                        <User2 className="w-6 h-6 text-slate-700" />
+                    <div className="flex gap-3 md:gap-4 h-10 md:h-12 items-center relative shrink-0 w-full">
+                      <div className="bg-[#ececf0] relative rounded-full shrink-0 size-10 md:size-12 flex items-center justify-center">
+                        <User2 className="w-5 h-5 md:w-6 md:h-6 text-slate-700" />
                       </div>
-                      <div className="h-11 relative shrink-0 w-[196.625px]">
-                        <div className="flex flex-col h-11 items-start relative w-[196.625px]">
-                          <div className="h-6 relative shrink-0 w-full">
-                            <p className="absolute font-['Arial',sans-serif] leading-[24px] left-0 not-italic text-[16px] text-neutral-950 top-[-1.67px]">
+                      <div className="h-auto md:h-11 relative shrink-0 flex-1">
+                        <div className="flex flex-col h-auto md:h-11 items-start relative">
+                          <div className="h-auto md:h-6 relative shrink-0 w-full">
+                            <p className="font-['Arial',sans-serif] leading-[24px] not-italic text-sm md:text-base text-neutral-950">
                               {testimonial.name}
                             </p>
                           </div>
-                          <div className="flex h-5 items-start relative shrink-0 w-full">
-                            <p className="font-['Arial',sans-serif] leading-[20px] not-italic relative shrink-0 text-[#717182] text-[14px]">
+                          <div className="flex h-auto md:h-5 items-start relative shrink-0 w-full">
+                            <p className="font-['Arial',sans-serif] leading-[20px] not-italic relative shrink-0 text-[#717182] text-xs md:text-sm">
                               {testimonial.role}
                             </p>
                           </div>
@@ -140,14 +140,12 @@ export function Testimonials() {
             key={i}
             type="button"
             onClick={() => setPage(i)}
-            className={`rounded-full transition-all duration-300 ease-out ${
-              i === page
+            className={`rounded-full transition-all duration-300 ease-out ${i === page
                 ? "h-4 w-4 bg-[#16A34A] scale-100"
                 : "h-2.5 w-2.5 bg-[#777777] scale-100"
-            }`}
-            aria-label={`Show testimonials ${i * pageSize + 1} to ${
-              Math.min((i + 1) * pageSize, testimonials.length)
-            }`}
+              }`}
+            aria-label={`Show testimonials ${i * pageSize + 1} to ${Math.min((i + 1) * pageSize, testimonials.length)
+              }`}
           />
         ))}
       </div>

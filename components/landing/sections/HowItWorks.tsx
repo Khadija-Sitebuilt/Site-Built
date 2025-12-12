@@ -20,40 +20,35 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="bg-gray-50 box-border flex flex-col gap-20 items-center left-0 overflow-clip px-[120px] py-[112px] w-full">
-      <div className="flex flex-col gap-20 items-center max-w-[1280px] relative shrink-0 w-full">
-        <div className="flex flex-col gap-6 items-start leading-[0] relative shrink-0 text-center">
-          <p className="font-['Inter',sans-serif] font-bold leading-[normal] not-italic relative shrink-0 text-[0px] text-[48px] tracking-[-0.96px] w-[768px] whitespace-pre-wrap">
+    <section id="howitworks" className="bg-gray-50 box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center left-0 overflow-clip px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
+      <div className="flex flex-col gap-10 md:gap-16 lg:gap-20 items-center max-w-[1280px] relative shrink-0 w-full">
+        <div className="flex flex-col gap-4 md:gap-6 items-start leading-[0] relative shrink-0 text-center w-full px-4 sm:px-0">
+          <p className="font-['Inter',sans-serif] font-bold leading-[normal] not-italic relative shrink-0 text-[0px] text-3xl sm:text-4xl lg:text-5xl tracking-[-0.96px] w-full max-w-full md:max-w-[768px] mx-auto whitespace-pre-wrap">
             <span className="text-black">How It </span>
             <span className="font-['Inter',sans-serif] font-normal italic text-green-600">Works</span>
           </p>
-          <div className="font-['Open_Sans',sans-serif] font-normal leading-[normal] relative shrink-0 text-[18px] text-black w-[768px] whitespace-pre-wrap">
+          <div className="font-['Open_Sans',sans-serif] font-normal leading-[normal] relative shrink-0 text-base md:text-lg text-black w-full max-w-full md:max-w-[768px] mx-auto whitespace-pre-wrap">
             <p className="mb-0">
               Turn site photos into accurate As-Builts in{" "}
             </p>
             <p>three simple steps no CAD, no manual work.</p>
           </div>
         </div>
-        <div className="flex gap-12 items-start justify-center relative shrink-0 w-full">
+        <div className="flex flex-col md:flex-row md:flex-wrap lg:flex-nowrap gap-6 md:gap-6 lg:gap-12 items-start justify-center relative shrink-0 w-full">
           {steps.map((step, index) => (
-            <div key={index} className="box-border flex flex-[1_0_0] flex-col gap-16 items-start min-h-px min-w-px overflow-clip p-5 relative shrink-0">
-              <div className="h-[215.676px] relative shrink-0 w-full">
-                <div className="absolute border border-gray-50 border-solid h-[215.676px] left-0 rounded-[20px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.05)] top-0 w-full">
-                  {index === 2 ? (
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[20px]">
-                      <img alt="" className="absolute h-[160.3%] left-[1.57%] max-w-none top-[-59.8%] w-full" src={step.image} />
-                    </div>
-                  ) : (
-                    <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[20px] size-full" src={step.image} />
-                  )}
-                </div>
+            <div key={index} className="box-border flex flex-col gap-8 md:gap-12 lg:gap-16 items-start w-full md:w-[calc(50%-12px)] lg:w-auto lg:flex-[1_0_0] overflow-clip p-4 md:p-5 relative shrink-0">
+              <div className="h-auto aspect-[4/3] md:h-[215.676px] relative shrink-0 w-full">
+                <div
+                  className="absolute border border-gray-50 border-solid h-full left-0 rounded-[20px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.05)] top-0 w-full bg-no-repeat bg-contain bg-center"
+                  style={{ backgroundImage: `url('${step.image}')` }}
+                />
               </div>
-              <div className="flex flex-col gap-6 items-center relative shrink-0 w-full">
-                <div className="flex flex-col gap-4 items-start leading-[0] relative shrink-0 text-center w-full">
-                  <div className="font-['Inter',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-[24px] text-black tracking-[-0.48px] w-full whitespace-pre-wrap">
+              <div className="flex flex-col gap-4 md:gap-6 items-center relative shrink-0 w-full">
+                <div className="flex flex-col gap-3 md:gap-4 items-start leading-[0] relative shrink-0 text-center w-full">
+                  <div className="font-['Inter',sans-serif] font-medium leading-[normal] not-italic relative shrink-0 text-base sm:text-lg md:text-xl lg:text-2xl text-black tracking-[-0.48px] w-full whitespace-pre-wrap">
                     {step.title}
                   </div>
-                  <div className="font-['Open_Sans',sans-serif] font-normal leading-[normal] relative shrink-0 text-[14px] text-slate-600 w-full whitespace-pre-wrap">
+                  <div className="font-['Open_Sans',sans-serif] font-normal leading-[normal] relative shrink-0 text-xs sm:text-sm md:text-base text-slate-600 w-full whitespace-pre-wrap">
                     {step.description}
                   </div>
                 </div>

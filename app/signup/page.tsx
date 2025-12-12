@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, ArrowRight, ChevronDown } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, ChevronDown, ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function SignupPage() {
@@ -97,16 +97,18 @@ export default function SignupPage() {
         />
       </div>
 
-      <div className="flex w-full lg:w-[50%] items-center justify-center px-6 py-12">
+      <div className="flex w-full lg:w-[50%] items-center justify-center px-6 py-12 relative">
         <div className="w-full max-w-lg">
-          <div className="bg-white rounded-2xl shadow-lg px-8 py-10">
+          <div className="bg-white rounded-2xl shadow-lg px-8 py-10 relative">
             <div className="flex justify-center mb-6">
-              <Image
-                src="/images/landing/Logo.png"
-                alt="SiteBuilt Logo"
-                width={120}
-                height={40}
-              />
+              <Link href="/" className="inline-block transition-transform duration-200 hover:scale-105">
+                <Image
+                  src="/images/landing/Logo.png"
+                  alt="SiteBuilt Logo"
+                  width={120}
+                  height={40}
+                />
+              </Link>
             </div>
 
             <div className="text-center mb-8">
