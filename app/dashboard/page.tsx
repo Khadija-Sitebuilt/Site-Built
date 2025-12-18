@@ -2,44 +2,31 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import ProjectCard from "@/components/ProjectCard";
-import ActivityItem from "@/components/ActivityItem";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import ProjectCard from "@/components/dashboard/ProjectCard";
+import ActivityItem from "@/components/dashboard/ActivityItem";
+import { ArrowRight, ChevronDown, Clock } from "lucide-react";
+import { getAllProjects } from "@/lib/mockData";
+import { useDashboard } from "./layout";
 
-// Mock data for projects
-const mockProjects = [
-  {
-    id: "1",
-    title: "Downtown Office Complex",
-    location: "123 Main St, City Center",
-    status: "processing" as const,
-    progress: 75,
-    thumbnail: "/images/projects/office-complex.jpg",
-    fileCount: 24,
-    pendingCount: 3,
-    lastUpdated: "2 hours ago",
-  },
-  {
-    id: "2",
-    title: "Residential Tower Phase 2",
-    location: "456 Oak Ave, Suburbia",
-    status: "draft" as const,
-    progress: 0,
-    thumbnail: "/images/projects/residential-tower.jpg",
-    fileCount: 24,
-    lastUpdated: "2 hours ago",
-  },
-  {
-    id: "3",
-    title: "Bridge Renovation",
-    location: "123 Main St, City Center",
-    status: "completed" as const,
-    progress: 100,
-    thumbnail: "/images/projects/bridge-renovation.jpg",
-    fileCount: 24,
-    lastUpdated: "2 hours ago",
-  },
-];
+// Mock data for projects - using centralized mock data
+const mockProjects = getAllProjects().map(project => ({
+  id: project.id,
+  title: project.name,
+  location: project.location,
+  status: project.status === 'active' ? 'processing' as const :
+    project.status === 'completed' ? 'completed' as const :
+      project.status === 'archived' ? 'draft' as const : 'draft' as const,
+  progress: project.status === 'completed' ? 100 :
+    project.status === 'active' ? 75 :
+      project.status === 'archived' ? 50 : 0,
+  thumbnail: "/images/projects/office-complex.jpg",
+  fileCount: 24,
+  pendingCount: project.status === 'active' ? 3 : undefined,
+  lastUpdated: "2 hours ago",
+}));
+
+// Mock recently viewed projects (first 3)
+const recentlyViewed = mockProjects.slice(0, 3);
 
 // Mock data for recent activity
 const mockActivities = [
@@ -71,6 +58,7 @@ const mockActivities = [
 
 export default function DashboardPage() {
   const [greeting, setGreeting] = useState("Welcome");
+  const { searchQuery, statusFilter, setStatusFilter } = useDashboard();
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -82,6 +70,15 @@ export default function DashboardPage() {
           : "Good evening";
     setGreeting(timeGreeting);
   }, []);
+
+  // Filter projects based on search and status
+  const filteredProjects = mockProjects.filter(project => {
+    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "All Status" ||
+      project.status.toLowerCase() === statusFilter.toLowerCase();
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <>
@@ -104,10 +101,14 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Filters */}
-      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      {/* Status Filter */}
+      <div className="mb-6 flex items-center justify-end">
         <div className="relative w-full sm:w-auto">
-          <select className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-10 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer w-full">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2.5 pr-10 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer w-full"
+          >
             <option>All Status</option>
             <option>Processing</option>
             <option>Draft</option>
@@ -115,38 +116,49 @@ export default function DashboardPage() {
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
         </div>
-
-        <div className="relative w-full sm:w-auto">
-          <select className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-10 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer w-full">
-            <option>All Time</option>
-            <option>Last 7 days</option>
-            <option>Last 30 days</option>
-            <option>Last 90 days</option>
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-        </div>
-
-        <button className="flex items-center justify-center gap-2 bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto">
-          Sort
-          <ChevronDown className="w-4 h-4" />
-        </button>
       </div>
+
+      {/* Recently Viewed Section */}
+      {!searchQuery && recentlyViewed.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock className="w-5 h-5 text-gray-600" />
+            <h2 className="text-lg font-bold text-gray-900">Recently Viewed</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentlyViewed.map((project) => (
+              <ProjectCard key={`recent-${project.id}`} project={project} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Your Projects Section */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Your Projects</h2>
-          <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
-            View all
-          </button>
+          <h2 className="text-xl font-bold text-gray-900">
+            {searchQuery ? 'Search Results' : 'Your Projects'}
+          </h2>
+          {!searchQuery && (
+            <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
+              View all
+            </button>
+          )}
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        {filteredProjects.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-gray-50 rounded-xl">
+            <p className="text-gray-500">No projects found matching your search.</p>
+          </div>
+        )}
       </div>
 
       {/* Recent Activity Section */}
