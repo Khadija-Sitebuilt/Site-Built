@@ -1,56 +1,144 @@
 "use client";
 
-import { FileText, Info } from "lucide-react";
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { FileText, Download, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 export default function ExportTab() {
+    const params = useParams();
+    const projectId = params.id as string;
+
+    const [isExporting, setIsExporting] = useState(false);
+    const [exportUrl, setExportUrl] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleExport = async () => {
+        setIsExporting(true);
+        setError(null);
+        setExportUrl(null);
+
+        try {
+            const response = await fetch(`/api/projects/${projectId}/export`, {
+                method: "POST",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to generate export");
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.url) {
+                setExportUrl(data.url);
+                trackEvent(ANALYTICS_EVENTS.EXPORT_GENERATED, {
+                    projectId,
+                    format: 'pdf', // Default for now
+                });
+            } else {
+                throw new Error("Invalid response from server");
+            }
+        } catch (err) {
+            setError("Failed to generate report. Please try again.");
+            console.error(err);
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     return (
-        <div className="max-w-3xl mx-auto text-center py-16">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-4">
-                <FileText className="w-8 h-8 text-emerald-600" />
+        <div className="max-w-3xl mx-auto py-12 px-4">
+            <div className="text-center mb-12">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Export As-Built Report</h2>
+                <p className="text-gray-600 max-w-lg mx-auto">
+                    Generate a comprehensive PDF report containing the floor plan,
+                    numbered pins, and a detailed table of all photos and observations.
+                </p>
             </div>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Export Feature Coming Soon
-            </h3>
+            <div className="bg-white border rounded-2xl shadow-sm overflow-hidden mb-8">
+                <div className="p-8">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                                <FileText className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-gray-900">Standard As-Built Report</h3>
+                                <p className="text-sm text-gray-500">Includes plan, pins, and photo log</p>
+                            </div>
+                        </div>
+                        {exportUrl ? (
+                            <a
+                                href={exportUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                            >
+                                <Download className="w-4 h-4" />
+                                Download PDF
+                            </a>
+                        ) : (
+                            <button
+                                onClick={handleExport}
+                                disabled={isExporting}
+                                className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isExporting ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Generating...
+                                    </>
+                                ) : (
+                                    <>
+                                        Generate Report
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
 
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Generate professional As-Built documentation with floor plans, photo placements, and comprehensive metadata reports.
-            </p>
+                    {error && (
+                        <div className="bg-red-50 text-red-700 p-4 rounded-lg flex items-center gap-2 mb-6">
+                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                            <p>{error}</p>
+                        </div>
+                    )}
 
-            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-6 text-left">
-                <div className="flex gap-3">
-                    <Info className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                        <h4 className="font-semibold text-emerald-900 mb-2">Planned Export Options</h4>
-                        <ul className="space-y-2 text-sm text-emerald-800">
-                            <li className="flex items-start gap-2">
-                                <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-600 flex-shrink-0" />
-                                PDF Report with numbered pins and photo table
+                    {exportUrl && (
+                        <div className="bg-green-50 text-green-700 p-4 rounded-lg flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                            <p>Report generated successfully! Click the download button above to save it.</p>
+                        </div>
+                    )}
+
+                    <div className="border-t pt-6 mt-2">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-4">Report Contents</h4>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600">
+                            <li className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                High-resolution floor plan
                             </li>
-                            <li className="flex items-start gap-2">
-                                <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-600 flex-shrink-0" />
-                                HTML Interactive report with zoom and navigation
+                            <li className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                Numbered pin locations
                             </li>
-                            <li className="flex items-start gap-2">
-                                <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-600 flex-shrink-0" />
-                                CSV Export of photo metadata and coordinates
+                            <li className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                Photo metadata table
                             </li>
-                            <li className="flex items-start gap-2">
-                                <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-600 flex-shrink-0" />
-                                Plan image with overlaid pins (PNG/JPEG)
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-600 flex-shrink-0" />
-                                Timestamped documentation for project records
+                            <li className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                GPS coordinates log
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <p className="text-sm text-gray-500 mt-6">
-                Expected in Week 4 of development
-            </p>
+            <div className="text-center text-sm text-gray-500">
+                <p>Need a custom format? <a href="#" className="text-blue-600 hover:underline">Contact support</a></p>
+            </div>
         </div>
     );
 }

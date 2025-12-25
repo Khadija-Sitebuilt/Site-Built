@@ -10,10 +10,13 @@
     "download-images": "node scripts/download-figma-images.js"
   },
   "dependencies": {
+    "@next/third-parties": "^16.1.1",
+    "@sentry/nextjs": "^10.32.1",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/supabase-js": "^2.86.0",
     "lucide-react": "^0.555.0",
     "next": "^16.0.10",
+    "posthog-js": "^1.310.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "resend": "^6.6.0"

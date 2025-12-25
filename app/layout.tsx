@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "Upload floor plans, geo-tagged photos, and create professional as-built documentation",
 };
 
+import { PHProvider } from "@/components/PostHogProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
-        {children}
+        <PHProvider>
+          {children}
+        </PHProvider>
       </body>
     </html>
   );
