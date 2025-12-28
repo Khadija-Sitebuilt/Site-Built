@@ -148,11 +148,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                 );
             case 'plans':
-                return <PlansTab plans={[]} photos={[]} projectId={project.id} />;
+                return <PlansTab projectId={project.id} />;
             case 'photos':
-                return <PhotosTab photos={[]} projectId={project.id} />;
+                return <PhotosTab projectId={project.id} />;
             case 'review':
-                return <ReviewTab plans={[]} photos={[]} projectId={project.id} />;
+                return <ReviewTab projectId={project.id} />;
             case 'export':
                 return <ExportTab />;
             default:

@@ -7,7 +7,6 @@ import Link from "next/link";
 import PhotoList from "@/components/photos/PhotoList";
 
 interface PhotosTabProps {
-    photos: any[]; // Legacy prop
     projectId: string;
 }
 

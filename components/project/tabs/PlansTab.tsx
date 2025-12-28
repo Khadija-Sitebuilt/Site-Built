@@ -6,8 +6,6 @@ import { uploadPlan, getPlans, type Plan } from "@/lib/api";
 import Link from "next/link";
 
 interface PlansTabProps {
-    plans: any[]; // Legacy prop - now unused
-    photos: any[]; // Legacy prop - now unused
     projectId: string;
 }
 
