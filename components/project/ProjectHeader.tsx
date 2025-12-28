@@ -2,10 +2,17 @@
 
 import Link from "next/link";
 import { ArrowLeft, MapPin, Calendar, CheckCircle, Archive, Clock } from "lucide-react";
-import { Project } from "@/lib/mockData";
 
 interface ProjectHeaderProps {
-    project: Project;
+    project: {
+        id: string;
+        name: string;
+        location: string;
+        status: string;
+        description?: string;
+        startDate?: string;
+        endDate?: string;
+    };
 }
 
 export default function ProjectHeader({ project }: ProjectHeaderProps) {
@@ -77,18 +84,20 @@ export default function ProjectHeader({ project }: ProjectHeaderProps) {
             )}
 
             {/* Project Metadata */}
-            <div className="flex items-center gap-6 text-sm">
-                <div className="flex items-center gap-2 text-gray-600">
-                    <Calendar className="w-4 h-4" />
-                    <span className="font-medium text-gray-900">Start:</span>
-                    <span>{formatDate(project.startDate)}</span>
+            {project.startDate && project.endDate && (
+                <div className="flex items-center gap-6 text-sm">
+                    <div className="flex items-center gap-2 text-gray-600">
+                        <Calendar className="w-4 h-4" />
+                        <span className="font-medium text-gray-900">Start:</span>
+                        <span>{formatDate(project.startDate)}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                        <Calendar className="w-4 h-4" />
+                        <span className="font-medium text-gray-900">End:</span>
+                        <span>{formatDate(project.endDate)}</span>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                    <Calendar className="w-4 h-4" />
-                    <span className="font-medium text-gray-900">End:</span>
-                    <span>{formatDate(project.endDate)}</span>
-                </div>
-            </div>
+            )}
         </div>
     );
 }

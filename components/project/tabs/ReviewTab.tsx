@@ -1,23 +1,25 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plan, Photo, PinPosition } from "@/lib/mockData";
+import { getPlans, getPhotos, getProjectPlacements, savePhotoPlacement, type Plan, type Photo, type PhotoPlacement } from "@/lib/api";
 import ReviewSidebar from "@/components/review/ReviewSidebar";
 import ReviewPlanView from "@/components/review/ReviewPlanView";
 import PlacementStats from "@/components/review/PlacementStats";
 import PhotoViewerModal from "@/components/photos/PhotoViewerModal";
 
 interface ReviewTabProps {
-    plans?: Plan[];
-    photos?: Photo[];
-    projectId?: string;
+    projectId: string;
 }
 
-export default function ReviewTab({ plans = [], photos = [], projectId }: ReviewTabProps) {
-    const [localPhotos, setLocalPhotos] = useState<Photo[]>(photos);
+export default function ReviewTab({ projectId }: ReviewTabProps) {
+    const [plans, setPlans] = useState<any[]>([]); // Using any[] to match UI component expectation
+    const [photos, setPhotos] = useState<any[]>([]); // Using any[] to include placement status
+    const [placements, setPlacements] = useState<PhotoPlacement[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
-    const [viewingPhoto, setViewingPhoto] = useState<Photo | null>(null);
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'warning' } | null>(null);
+    const [viewingPhoto, setViewingPhoto] = useState<any | null>(null);
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'warning' | 'error' } | null>(null);
 
     // Toast timer
     useEffect(() => {
@@ -27,46 +29,148 @@ export default function ReviewTab({ plans = [], photos = [], projectId }: Review
         }
     }, [toast]);
 
-    // Sync if props change
+    // Fetch all data
     useEffect(() => {
-        setLocalPhotos(photos);
-    }, [photos]);
+        async function loadData() {
+            try {
+                setLoading(true);
+                const [plansData, photosData, placementsData] = await Promise.all([
+                    getPlans(projectId),
+                    getPhotos(projectId),
+                    getProjectPlacements(projectId)
+                ]);
+
+                setPlacements(placementsData);
+
+                // Adapt Plans to UI expected format
+                const adaptedPlans = plansData.map(plan => ({
+                    id: plan.id,
+                    projectId: plan.project_id,
+                    name: `Plan ${plan.id.substring(0, 8)}`, // Use ID as name if not available
+                    fileUrl: plan.file_url,
+                    thumbnailUrl: plan.file_url,
+                    width: plan.width,
+                    height: plan.height,
+                    uploadedAt: plan.created_at
+                }));
+                // Cast to any to bypass strict type checking against mockData types for now
+                setPlans(adaptedPlans as any[]);
+
+                // Merge photos with placements
+                const mergedPhotos = photosData.map(photo => {
+                    const placement = placementsData.find(p => p.photo_id === photo.id);
+                    return {
+                        ...photo,
+                        // Map API fields to UI expected fields
+                        filename: `Photo ${photo.id.substring(0, 8)}`,
+                        thumbnailUrl: photo.file_url,
+                        fileUrl: photo.file_url,
+                        placementStatus: placement ? 'placed' : 'unplaced',
+                        pinPosition: placement ? { x: placement.x, y: placement.y, planId: placement.plan_id } : undefined,
+                        exif: {
+                            latitude: photo.exif_lat,
+                            longitude: photo.exif_lng,
+                            timestamp: photo.exif_timestamp
+                        }
+                    };
+                });
+
+                setPhotos(mergedPhotos);
+            } catch (err) {
+                console.error('Error loading review data:', err);
+                setToast({ message: "Failed to load project data", type: 'error' });
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [projectId]);
 
     const handlePhotoSelect = (photoId: string) => {
-        // If clicking already selected photo, open viewer
         if (selectedPhotoId === photoId) {
-            const photo = localPhotos.find(p => p.id === photoId);
+            const photo = photos.find(p => p.id === photoId);
             if (photo) setViewingPhoto(photo);
         } else {
             setSelectedPhotoId(photoId);
         }
     };
 
-    const handlePinPlace = (photoId: string, position: PinPosition) => {
-        setLocalPhotos(prev => prev.map(p =>
-            p.id === photoId
-                ? { ...p, pinPosition: position, placementStatus: 'placed' as const }
-                : p
-        ));
-        setToast({ message: "Pin placed successfully!", type: 'success' });
+    const handlePinPlace = async (photoId: string, position: { x: number, y: number, planId?: string }) => {
+        try {
+            // Find active plan ID - usually the first one if not specified
+            const activePlanId = position.planId || plans[0]?.id;
+
+            if (!activePlanId) {
+                setToast({ message: "No plan selected!", type: 'error' });
+                return;
+            }
+
+            // Save to database
+            const savedPlacement = await savePhotoPlacement({
+                photo_id: photoId,
+                plan_id: activePlanId,
+                x: position.x,
+                y: position.y,
+                placement_method: 'manual'
+            });
+
+            // Update local state
+            setPhotos(prev => prev.map(p =>
+                p.id === photoId
+                    ? {
+                        ...p,
+                        placementStatus: 'placed',
+                        pinPosition: { x: position.x, y: position.y, planId: activePlanId }
+                    }
+                    : p
+            ));
+
+            // Update local state - Placements (Insert or Update)
+            setPlacements(prev => {
+                const exists = prev.some(p => p.photo_id === photoId);
+                if (exists) {
+                    return prev.map(p => p.photo_id === photoId ? savedPlacement : p);
+                }
+                return [...prev, savedPlacement];
+            });
+
+            setToast({ message: "Pin placed successfully!", type: 'success' });
+
+        } catch (err) {
+            console.error('Error placing pin:', err);
+            setToast({ message: "Failed to save placement", type: 'error' });
+        }
     };
 
     const handlePinDelete = (photoId: string) => {
-        setLocalPhotos(prev => prev.map(p =>
+        // TODO: Implement delete API call
+        setPhotos(prev => prev.map(p =>
             p.id === photoId
-                ? { ...p, pinPosition: undefined, placementStatus: 'unplaced' as const }
+                ? { ...p, pinPosition: undefined, placementStatus: 'unplaced' }
                 : p
         ));
-        setToast({ message: "Pin removed", type: 'warning' });
+        setToast({ message: "Pin removed (local only)", type: 'warning' });
     };
 
-    const placedCount = localPhotos.filter(p => p.placementStatus === 'placed').length;
-    const unplacedCount = localPhotos.length - placedCount;
+    const placedCount = photos.filter(p => p.placementStatus === 'placed').length;
+    const unplacedCount = photos.length - placedCount;
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[600px] bg-white rounded-xl border border-gray-200">
+                <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
             <PlacementStats
-                total={localPhotos.length}
+                total={photos.length}
                 placed={placedCount}
                 unplaced={unplacedCount}
             />
@@ -74,7 +178,8 @@ export default function ReviewTab({ plans = [], photos = [], projectId }: Review
             <div className="flex bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 h-[calc(100vh-350px)] min-h-[600px] relative">
                 {/* Toast Notification */}
                 {toast && (
-                    <div className={`absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg shadow-lg text-sm font-medium transition-all ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-white'
+                    <div className={`absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg shadow-lg text-sm font-medium transition-all ${toast.type === 'success' ? 'bg-emerald-600 text-white' :
+                        toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-gray-800 text-white'
                         }`}>
                         {toast.message}
                     </div>
@@ -83,7 +188,7 @@ export default function ReviewTab({ plans = [], photos = [], projectId }: Review
                 {/* Left: Plan Viewer */}
                 <ReviewPlanView
                     plans={plans}
-                    photos={localPhotos}
+                    photos={photos}
                     selectedPhotoId={selectedPhotoId}
                     onPhotoSelect={handlePhotoSelect}
                     onPinPlace={handlePinPlace}
@@ -91,7 +196,7 @@ export default function ReviewTab({ plans = [], photos = [], projectId }: Review
 
                 {/* Right: Sidebar */}
                 <ReviewSidebar
-                    photos={localPhotos}
+                    photos={photos}
                     selectedPhotoId={selectedPhotoId}
                     onPhotoSelect={handlePhotoSelect}
                     onPinDelete={handlePinDelete}

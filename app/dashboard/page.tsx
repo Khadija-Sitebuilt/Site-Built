@@ -5,28 +5,8 @@ import Link from "next/link";
 import ProjectCard from "@/components/dashboard/ProjectCard";
 import ActivityItem from "@/components/dashboard/ActivityItem";
 import { ArrowRight, ChevronDown, Clock } from "lucide-react";
-import { getAllProjects } from "@/lib/mockData";
+import { getProjects } from "@/lib/api";
 import { useDashboard } from "./layout";
-
-// Mock data for projects - using centralized mock data
-const mockProjects = getAllProjects().map(project => ({
-  id: project.id,
-  title: project.name,
-  location: project.location,
-  status: project.status === 'active' ? 'processing' as const :
-    project.status === 'completed' ? 'completed' as const :
-      project.status === 'archived' ? 'draft' as const : 'draft' as const,
-  progress: project.status === 'completed' ? 100 :
-    project.status === 'active' ? 75 :
-      project.status === 'archived' ? 50 : 0,
-  thumbnail: "/images/projects/office-complex.jpg",
-  fileCount: 24,
-  pendingCount: project.status === 'active' ? 3 : undefined,
-  lastUpdated: "2 hours ago",
-}));
-
-// Mock recently viewed projects (first 3)
-const recentlyViewed = mockProjects.slice(0, 3);
 
 // Mock data for recent activity
 const mockActivities = [
@@ -59,6 +39,9 @@ const mockActivities = [
 export default function DashboardPage() {
   const [greeting, setGreeting] = useState("Welcome");
   const { searchQuery, statusFilter, setStatusFilter } = useDashboard();
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -71,8 +54,40 @@ export default function DashboardPage() {
     setGreeting(timeGreeting);
   }, []);
 
+  // Fetch projects on mount
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        setLoading(true);
+        setError("");
+        const apiProjects = await getProjects();
+
+        // Transform API projects to match ProjectCard expected format
+        const transformedProjects = apiProjects.map(project => ({
+          id: project.id,
+          title: project.name,
+          location: project.description || "No location specified",
+          status: 'draft' as const, // Default status since API doesn't provide it
+          progress: 0,
+          thumbnail: "/images/projects/office-complex.jpg",
+          fileCount: 0,
+          lastUpdated: new Date(project.created_at).toLocaleDateString(),
+        }));
+
+        setProjects(transformedProjects);
+      } catch (err: any) {
+        console.error('Error fetching projects:', err);
+        setError(err.message || 'Failed to load projects');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProjects();
+  }, []);
+
   // Filter projects based on search and status
-  const filteredProjects = mockProjects.filter(project => {
+  const filteredProjects = projects.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.location.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "All Status" ||
@@ -80,13 +95,16 @@ export default function DashboardPage() {
     return matchesSearch && matchesStatus;
   });
 
+  // Recently viewed projects (first 3)
+  const recentlyViewed = projects.slice(0, 3);
+
   return (
     <>
       {/* Welcome Section */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            {greeting}, John!
+            {greeting}!
           </h1>
           <p className="text-gray-600 mt-1">
             Here's what's happening on your construction site today.
@@ -118,8 +136,25 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
+            <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+          </div>
+        </div>
+      )}
+
       {/* Recently Viewed Section */}
-      {!searchQuery && recentlyViewed.length > 0 && (
+      {!loading && !searchQuery && recentlyViewed.length > 0 && (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="w-5 h-5 text-gray-600" />
@@ -135,31 +170,52 @@ export default function DashboardPage() {
       )}
 
       {/* Your Projects Section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">
-            {searchQuery ? 'Search Results' : 'Your Projects'}
-          </h2>
-          {!searchQuery && (
-            <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
-              View all
-            </button>
+      {!loading && (
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">
+              {searchQuery ? 'Search Results' : 'Your Projects'}
+            </h2>
+            {!searchQuery && projects.length > 0 && (
+              <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
+                View all
+              </button>
+            )}
+          </div>
+
+          {/* Projects Grid */}
+          {filteredProjects.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+              {projects.length === 0 ? (
+                <>
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No projects yet</h3>
+                  <p className="text-gray-500 mb-4">Get started by creating your first project</p>
+                  <Link
+                    href="/projects/new"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Create New Project
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </>
+              ) : (
+                <p className="text-gray-500">No projects found matching your search.</p>
+              )}
+            </div>
           )}
         </div>
-
-        {/* Projects Grid */}
-        {filteredProjects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-gray-50 rounded-xl">
-            <p className="text-gray-500">No projects found matching your search.</p>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Recent Activity Section */}
       <div>

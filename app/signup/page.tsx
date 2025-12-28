@@ -71,6 +71,20 @@ export default function SignupPage() {
       }
 
       if (data.user) {
+        // Create user record in public.users table
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: crypto.randomUUID(),
+            auth_uid: data.user.id,
+          });
+
+        if (insertError) {
+          console.error('Error creating user record:', insertError);
+          // Note: We don't throw here because auth signup was successful
+          // The user can still log in, but we should log this error
+        }
+
         // Show success message
         setUserEmail(formData.email);
         setSuccess(true);

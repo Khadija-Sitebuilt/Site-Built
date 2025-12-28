@@ -3,11 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, HelpCircle, Calendar, MapPin, CheckCircle, FileText, Image as ImageIcon, Crosshair, Rocket } from "lucide-react";
+import { createProject, uploadPlan, uploadPhoto } from "@/lib/api";
 
 export default function NewProjectPage() {
+    const router = useRouter();
     const [currentStep, setCurrentStep] = useState(1);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState("");
+    const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
     const totalSteps = 5;
 
 
@@ -128,14 +133,53 @@ export default function NewProjectPage() {
         }
     };
 
-    // Processing Logic
-    const handleStartProcessing = () => {
+    // Processing Logic - Create Project via API
+    const handleStartProcessing = async () => {
         setIsProcessing(true);
-        // Simulate processing time
-        setTimeout(() => {
-            setIsProcessing(false);
+        setError("");
+
+        try {
+            // Create the project in the backend
+            const project = await createProject({
+                name: formData.projectName,
+                description: formData.description || `${formData.location}\nStart Date: ${formData.startDate}\nEnd Date: ${formData.endDate}${formData.projectManager ? `\nProject Manager: ${formData.projectManager}` : ''}${formData.estimatedBudget ? `\nBudget: ${formData.estimatedBudget}` : ''}`,
+            });
+
+            setCreatedProjectId(project.id);
+
+            // Upload floor plan if one was selected
+            if (floorPlanFile) {
+                try {
+                    await uploadPlan(project.id, floorPlanFile);
+                    console.log('Successfully uploaded floor plan');
+                } catch (uploadErr) {
+                    console.error('Error uploading floor plan:', uploadErr);
+                    // Don't fail the entire project creation if plan upload fails
+                }
+            }
+
+            // Upload photos if any were selected
+            if (photos.length > 0) {
+                const photoUploadPromises = photos.map(photo =>
+                    uploadPhoto(project.id, photo)
+                );
+
+                try {
+                    await Promise.all(photoUploadPromises);
+                    console.log(`Successfully uploaded ${photos.length} photo(s)`);
+                } catch (uploadErr) {
+                    console.error('Error uploading photos:', uploadErr);
+                    // Don't fail the entire project creation
+                }
+            }
+
             setCurrentStep(6); // Advance to success state (Step 6)
-        }, 3000);
+        } catch (err: any) {
+            console.error('Error creating project:', err);
+            setError(err.message || 'Failed to create project. Please try again.');
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     // Steps configuration
@@ -204,6 +248,13 @@ export default function NewProjectPage() {
                     <div className="absolute top-4 left-0 w-full h-[1px] bg-gray-200 -z-0" />
                 </div>
             </div>
+
+            {/* Error Message */}
+            {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600">{error}</p>
+                </div>
+            )}
 
             {/* Form Content */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-8">
@@ -934,18 +985,41 @@ export default function NewProjectPage() {
                             <CheckCircle className="w-10 h-10 text-emerald-600" />
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-4">Project Created Successfully!</h3>
-                        <p className="text-gray-500 mb-12 max-w-md mx-auto">
-                            Your mapping project has been initialized and is ready for use.
+                        <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                            Your mapping project "{formData.projectName}" has been created and is ready for use.
                         </p>
 
-                        <div className="max-w-xl mx-auto border border-gray-200 rounded-xl p-4 flex items-center gap-4 bg-white shadow-sm">
-                            <div className="p-2 bg-emerald-50 rounded-lg">
-                                <CheckCircle className="w-6 h-6 text-emerald-600" />
+                        <div className="max-w-xl mx-auto border border-gray-200 rounded-xl p-6 bg-white shadow-sm mb-8">
+                            <div className="flex items-start gap-4 mb-4">
+                                <div className="p-2 bg-emerald-50 rounded-lg">
+                                    <CheckCircle className="w-6 h-6 text-emerald-600" />
+                                </div>
+                                <div className="text-left flex-1">
+                                    <h4 className="font-semibold text-gray-900 mb-1">{formData.projectName}</h4>
+                                    <p className="text-gray-500 text-sm">{formData.location}</p>
+                                </div>
                             </div>
-                            <div className="text-left flex-1">
-                                <h4 className="font-semibold text-gray-900 text-sm">Project created successfully!</h4>
-                                <p className="text-gray-500 text-sm">Your mapping project is ready to begin.</p>
-                            </div>
+                            <p className="text-sm text-gray-600 text-left">
+                                Next steps: Upload floor plans and photos to start mapping your construction site.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            {createdProjectId && (
+                                <Link
+                                    href={`/projects/${createdProjectId}`}
+                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+                                >
+                                    Go to Project
+                                    <ArrowRight className="w-5 h-5" />
+                                </Link>
+                            )}
+                            <Link
+                                href="/dashboard"
+                                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-gray-200 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                            >
+                                Back to Dashboard
+                            </Link>
                         </div>
                     </div>
                 )}
