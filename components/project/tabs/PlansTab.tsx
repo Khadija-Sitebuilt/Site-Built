@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { FileText, Calendar, Maximize2, Upload, X } from "lucide-react";
 import { uploadPlan, getPlans, type Plan } from "@/lib/api";
-import Link from "next/link";
+import PlanViewerModal from "@/components/project/PlanViewerModal";
 
 interface PlansTabProps {
     projectId: string;
@@ -15,6 +15,8 @@ export default function PlansTab({ projectId }: PlansTabProps) {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
     const [uploadProgress, setUploadProgress] = useState<string>("");
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+    const [isViewerOpen, setIsViewerOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Fetch plans on mount
@@ -216,31 +218,28 @@ export default function PlansTab({ projectId }: PlansTabProps) {
                 {plans.map((plan) => (
                     <div
                         key={plan.id}
-                        className="group relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                        className="group relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => {
+                            setSelectedPlan(plan);
+                            setIsViewerOpen(true);
+                        }}
                     >
                         {/* Plan Thumbnail */}
-                        <div className="aspect-[4/3] bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <div className="aspect-[4/3] bg-gray-100 flex items-center justify-center overflow-hidden relative">
                             {plan.file_url ? (
                                 <img
                                     src={plan.file_url}
                                     alt={`Floor plan ${plan.id}`}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                                 />
                             ) : (
                                 <FileText className="w-16 h-16 text-gray-300" />
                             )}
 
-                            {/* Hover Overlay */}
-                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <a
-                                        href={plan.file_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="p-3 rounded-full bg-white hover:bg-gray-100 inline-block"
-                                    >
-                                        <Maximize2 className="w-5 h-5 text-gray-900" />
-                                    </a>
+                            {/* Simple hover icon */}
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <div className="p-3 rounded-full bg-white/90 shadow-lg">
+                                    <Maximize2 className="w-5 h-5 text-gray-900" />
                                 </div>
                             </div>
                         </div>
@@ -262,6 +261,25 @@ export default function PlansTab({ projectId }: PlansTabProps) {
                     </div>
                 ))}
             </div>
+
+            {/* Plan Viewer Modal */}
+            <PlanViewerModal
+                plan={selectedPlan ? {
+                    id: selectedPlan.id,
+                    projectId: projectId,
+                    name: 'Floor Plan',
+                    fileUrl: selectedPlan.file_url || '',
+                    thumbnailUrl: selectedPlan.file_url || '',
+                    width: selectedPlan.width,
+                    height: selectedPlan.height,
+                    uploadedAt: selectedPlan.created_at
+                } : null}
+                isOpen={isViewerOpen}
+                onClose={() => {
+                    setIsViewerOpen(false);
+                    setSelectedPlan(null);
+                }}
+            />
         </div>
     );
 }

@@ -5,6 +5,7 @@ import { Image as ImageIcon, Upload, X, Filter } from "lucide-react";
 import { uploadPhoto, getPhotos, type Photo } from "@/lib/api";
 import Link from "next/link";
 import PhotoList from "@/components/photos/PhotoList";
+import { supabase } from "@/lib/supabase";
 
 interface PhotosTabProps {
     projectId: string;
@@ -12,6 +13,7 @@ interface PhotosTabProps {
 
 export default function PhotosTab({ projectId }: PhotosTabProps) {
     const [photos, setPhotos] = useState<Photo[]>([]);
+    const [placedPhotoIds, setPlacedPhotoIds] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
@@ -20,28 +22,52 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Fetch photos on mount
+    // Fetch photos and placements on mount
     useEffect(() => {
-        fetchPhotos();
-    }, [projectId]);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                setError("");
 
-    const fetchPhotos = async () => {
-        try {
-            setLoading(true);
-            setError("");
-            const fetchedPhotos = await getPhotos(projectId);
-            setPhotos(fetchedPhotos);
-        } catch (err: any) {
-            console.error('Error fetching photos:', err);
-            // Don't show error for "Method Not Allowed" - backend endpoint might not exist yet
-            if (!err.message?.includes('Method Not Allowed')) {
-                setError(err.message || 'Failed to load photos');
+                // 1. Fetch Photos
+                const fetchedPhotos = await getPhotos(projectId);
+                setPhotos(fetchedPhotos);
+
+                // 2. Fetch Placements
+                // First get plans for this project
+                const { data: plans } = await supabase
+                    .from('plans')
+                    .select('id')
+                    .eq('project_id', projectId);
+
+                const planIds = plans?.map((p: any) => p.id) || [];
+
+                if (planIds.length > 0) {
+                    const { data: placements } = await supabase
+                        .from('photo_placements')
+                        .select('photo_id')
+                        .in('plan_id', planIds);
+
+                    const placedIds = new Set(placements?.map((p: any) => p.photo_id) || []);
+                    setPlacedPhotoIds(placedIds);
+                } else {
+                    setPlacedPhotoIds(new Set());
+                }
+
+            } catch (err: any) {
+                console.error('Error fetching data:', err);
+                if (!err.message?.includes('Method Not Allowed')) {
+                    setError(err.message || 'Failed to load data');
+                }
+                setPhotos([]);
+                setPlacedPhotoIds(new Set());
+            } finally {
+                setLoading(false);
             }
-            setPhotos([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
+
+        fetchData();
+    }, [projectId]);
 
     const handleFileSelect = async (files: FileList | null) => {
         if (!files || files.length === 0) return;
@@ -94,18 +120,17 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
         e.preventDefault();
     };
 
-    // Filter logic (currently basic since placement isn't fully implemented)
+    // Filter logic
     const filteredPhotos = photos.filter(photo => {
-        // Map API photo to internal structure with placementStatus
-        // For now, assume unplaced until we have placement table integration
-        const placementStatus = 'unplaced';
+        const isPlaced = placedPhotoIds.has(photo.id);
+        const placementStatus = isPlaced ? 'placed' : 'unplaced';
 
         if (filter === 'all') return true;
         return placementStatus === filter;
     });
 
-    const placedCount = 0; // TODO: Implement placement counting
-    const unplacedCount = photos.length;
+    const placedCount = photos.filter(p => placedPhotoIds.has(p.id)).length;
+    const unplacedCount = photos.length - placedCount;
 
     // Loading state
     if (loading) {
@@ -127,7 +152,7 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
         fileUrl: p.file_url,
         thumbnailUrl: p.file_url,
         uploadedAt: p.created_at,
-        placementStatus: 'unplaced',
+        placementStatus: placedPhotoIds.has(p.id) ? 'placed' : 'unplaced',
         exif: {
             latitude: p.exif_lat,
             longitude: p.exif_lng,
@@ -268,6 +293,7 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
                 photos={adaptedPhotos}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
+                // eslint-disable-next-line no-console
                 onPhotoClick={(photo) => console.log('Photo clicked:', photo)}
                 showViewToggle={true}
             />

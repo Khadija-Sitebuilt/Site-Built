@@ -437,3 +437,28 @@ export async function getPhotos(projectId: string): Promise<Photo[]> {
         throw error;
     }
 }
+
+/**
+ * Export a project (generates HTML report)
+ */
+export async function exportProject(projectId: string): Promise<{ project_id: string; export_url: string }> {
+    try {
+        const headers = await getAuthHeaders();
+
+        const response = await fetch(`${API_BASE_URL}/projects/${projectId}/export`, {
+            method: 'POST',
+            headers,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Failed to export project: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error exporting project:', error);
+        throw error;
+    }
+}
