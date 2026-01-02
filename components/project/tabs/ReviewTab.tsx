@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getPlans, getPhotos, getProjectPlacements, savePhotoPlacement, type Plan, type Photo, type PhotoPlacement } from "@/lib/api";
+import { getPlans, getPhotos, getProjectPlacements, savePhotoPlacement, deletePhotoPlacement, type Plan, type Photo, type PhotoPlacement } from "@/lib/api";
 import ReviewSidebar from "@/components/review/ReviewSidebar";
 import ReviewPlanView from "@/components/review/ReviewPlanView";
 import PlacementStats from "@/components/review/PlacementStats";
 import PhotoViewerModal from "@/components/photos/PhotoViewerModal";
+import ReviewTabSkeleton from "@/components/project/tabs/ReviewTabSkeleton";
 
 interface ReviewTabProps {
     projectId: string;
@@ -51,7 +52,8 @@ export default function ReviewTab({ projectId }: ReviewTabProps) {
                     thumbnailUrl: plan.file_url,
                     width: plan.width,
                     height: plan.height,
-                    uploadedAt: plan.created_at
+                    uploadedAt: plan.created_at,
+                    is_active: plan.is_active // Pass active state to UI
                 }));
                 // Cast to any to bypass strict type checking against mockData types for now
                 setPlans(adaptedPlans as any[]);
@@ -65,8 +67,14 @@ export default function ReviewTab({ projectId }: ReviewTabProps) {
                         filename: `Photo ${photo.id.substring(0, 8)}`,
                         thumbnailUrl: photo.file_url,
                         fileUrl: photo.file_url,
+                        uploadedAt: photo.exif_timestamp || photo.created_at, // Prioritize EXIF date
                         placementStatus: placement ? 'placed' : 'unplaced',
-                        pinPosition: placement ? { x: placement.x, y: placement.y, planId: placement.plan_id } : undefined,
+                        pinPosition: placement ? {
+                            x: placement.x,
+                            y: placement.y,
+                            planId: placement.plan_id,
+                            placementMethod: placement.placement_method
+                        } : undefined,
                         exif: {
                             latitude: photo.exif_lat,
                             longitude: photo.exif_lng,
@@ -143,28 +151,32 @@ export default function ReviewTab({ projectId }: ReviewTabProps) {
         }
     };
 
-    const handlePinDelete = (photoId: string) => {
-        // TODO: Implement delete API call
-        setPhotos(prev => prev.map(p =>
-            p.id === photoId
-                ? { ...p, pinPosition: undefined, placementStatus: 'unplaced' }
-                : p
-        ));
-        setToast({ message: "Pin removed (local only)", type: 'warning' });
+    const handlePinDelete = async (photoId: string) => {
+        try {
+            await deletePhotoPlacement(photoId);
+
+            // Update local state - Photos
+            setPhotos(prev => prev.map(p =>
+                p.id === photoId
+                    ? { ...p, pinPosition: undefined, placementStatus: 'unplaced' }
+                    : p
+            ));
+
+            // Update local state - Placements
+            setPlacements(prev => prev.filter(p => p.photo_id !== photoId));
+
+            setToast({ message: "Pin removed successfully", type: 'success' });
+        } catch (err) {
+            console.error('Error removing pin:', err);
+            setToast({ message: "Failed to remove pin", type: 'error' });
+        }
     };
 
     const placedCount = photos.filter(p => p.placementStatus === 'placed').length;
     const unplacedCount = photos.length - placedCount;
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center h-[600px] bg-white rounded-xl border border-gray-200">
-                <div className="relative w-12 h-12">
-                    <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
-                    <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
-                </div>
-            </div>
-        );
+        return <ReviewTabSkeleton />;
     }
 
     return (

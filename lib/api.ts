@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { extractExifData } from './exif';
+import { generateRandomPlacement } from "./placement-utils";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://sitebuilt-backend.onrender.com';
 
@@ -53,6 +54,7 @@ export interface Plan {
     width: number;
     height: number;
     created_at: string;
+    is_active: boolean;
 }
 
 /**
@@ -109,13 +111,101 @@ export async function getProjects(): Promise<Project[]> {
     }
 }
 
+/**
+ * Get all projects with stats (plans, photos, etc) in a single efficient query.
+ * This replaces the N+1 fetch pattern in the dashboard.
+ */
+export async function getProjectsWithStats(): Promise<any[]> {
+    try {
+        const { data, error } = await supabase
+            .from('projects')
+            .select(`
+                *,
+                plans (
+                    id, 
+                    file_url, 
+                    created_at,
+                    photo_placements (photo_id)
+                ),
+                photos (
+                    id, 
+                    file_url, 
+                    created_at,
+                    exif_timestamp
+                )
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    } catch (error: any) {
+        console.error('Error fetching projects with stats:', error);
+        throw new Error(error.message);
+    }
+}
+
+/**
+ * Delete a project and all associated resources (plans, photos, placements)
+ */
+export async function deleteProject(projectId: string): Promise<void> {
+    try {
+        const headers = await getAuthHeaders();
+
+        // 1. Fetch file URLs before deleting DB records so we can clean up storage
+        const { data: plans } = await supabase
+            .from('plans')
+            .select('file_url')
+            .eq('project_id', projectId);
+
+        const { data: photos } = await supabase
+            .from('photos')
+            .select('file_url')
+            .eq('project_id', projectId);
+
+        // 2. Delete project from database (Cascade should handle DB records)
+        const { error: deleteError } = await supabase
+            .from('projects')
+            .delete()
+            .eq('id', projectId);
+
+        if (deleteError) {
+            throw new Error(deleteError.message);
+        }
+
+        // 3. Clean up Storage Files
+        // Delete Plans
+        const planFiles = plans?.map(p => {
+            const urlParts = p.file_url.split('/plans/');
+            return urlParts[1];
+        }).filter(Boolean) || [];
+
+        if (planFiles.length > 0) {
+            await supabase.storage.from('plans').remove(planFiles);
+        }
+
+        // Delete Photos
+        const photoFiles = photos?.map(p => {
+            const urlParts = p.file_url.split('/photos/');
+            return urlParts[1];
+        }).filter(Boolean) || [];
+
+        if (photoFiles.length > 0) {
+            await supabase.storage.from('photos').remove(photoFiles);
+        }
+
+    } catch (error) {
+        console.error('Error deleting project:', error);
+        throw error;
+    }
+}
+
 export interface PhotoPlacement {
     id: string;
     photo_id: string;
     plan_id: string;
     x: number;
     y: number;
-    placement_method: 'manual' | 'gps';
+    placement_method: 'manual' | 'gps_suggested' | 'gps_exact';
     created_at: string;
 }
 
@@ -175,6 +265,25 @@ export async function savePhotoPlacement(
 }
 
 /**
+ * Delete a photo placement (Unpin)
+ */
+export async function deletePhotoPlacement(photoId: string): Promise<void> {
+    try {
+        const { error } = await supabase
+            .from('photo_placements')
+            .delete()
+            .eq('photo_id', photoId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    } catch (error: any) {
+        console.error('Error deleting photo placement:', error);
+        throw new Error(`Failed to delete placement: ${error.message}`);
+    }
+}
+
+/**
  * Get all photo placements for a project (by getting all placements for all project plans)
  * Note: This is a bit inefficient without a direct project_id link, but strictly follows schema.
  * Better approach: Join with plans table to filter by project_id.
@@ -226,6 +335,91 @@ export async function getProject(id: string): Promise<Project> {
 }
 
 /**
+ * Get a single project with full stats (plans, photos, counts) in one query.
+ * Optimization for project view page.
+ */
+export async function getProjectWithStats(projectId: string): Promise<any> {
+    try {
+        const { data, error } = await supabase
+            .from('projects')
+            .select(`
+                *,
+                plans (
+                    id, 
+                    file_url, 
+                    created_at,
+                    photo_placements (photo_id)
+                ),
+                photos (
+                    id, 
+                    file_url, 
+                    created_at,
+                    exif_timestamp,
+                    photo_placements (id, plan_id)
+                )
+            `)
+            .eq('id', projectId)
+            .single();
+
+        if (error) throw error;
+        return data;
+    } catch (error: any) {
+        console.error('Error fetching project with stats:', error);
+        throw new Error(error.message);
+    }
+}
+
+/**
+ * Set a plan as the active plan for a project
+ * This sets is_active=false for all other plans in the project, then is_active=true for the target plan.
+ * IMPORTANT: This also deletes all photo placements on the old active plan.
+ */
+export async function setPlanActive(projectId: string, planId: string): Promise<void> {
+    try {
+        // 1. Get the current active plan ID
+        const { data: currentActivePlan } = await supabase
+            .from('plans')
+            .select('id')
+            .eq('project_id', projectId)
+            .eq('is_active', true)
+            .single();
+
+        // 2. Reset all plans for this project to inactive
+        const { error: resetError } = await supabase
+            .from('plans')
+            .update({ is_active: false })
+            .eq('project_id', projectId);
+
+        if (resetError) throw new Error(resetError.message);
+
+        // 3. Set the target plan to active
+        const { error: setError } = await supabase
+            .from('plans')
+            .update({ is_active: true })
+            .eq('id', planId);
+
+        if (setError) throw new Error(setError.message);
+
+        // 4. Delete all photo placements on the old active plan
+        if (currentActivePlan && currentActivePlan.id !== planId) {
+            const { error: deleteError } = await supabase
+                .from('photo_placements')
+                .delete()
+                .eq('plan_id', currentActivePlan.id);
+
+            if (deleteError) {
+                console.error('Error deleting photo placements:', deleteError);
+                // Don't throw - plan was already changed, just log the error
+            }
+        }
+
+    } catch (error: any) {
+        console.error('Error setting active plan:', error);
+        throw new Error(`Failed to update active plan: ${error.message}`);
+    }
+}
+
+/**
  * Upload a floor plan to a project (directly to Supabase Storage)
  */
 export async function uploadPlan(projectId: string, file: File): Promise<Plan> {
@@ -235,6 +429,14 @@ export async function uploadPlan(projectId: string, file: File): Promise<Plan> {
         if (!authUserId) {
             throw new Error('User not authenticated');
         }
+
+        // Check if this is the first plan (to set as active default)
+        const { count } = await supabase
+            .from('plans')
+            .select('*', { count: 'exact', head: true })
+            .eq('project_id', projectId);
+
+        const isFirstPlan = count === 0;
 
         // Generate unique filename
         const fileExt = file.name.split('.').pop();
@@ -281,6 +483,7 @@ export async function uploadPlan(projectId: string, file: File): Promise<Plan> {
                 file_url: publicUrl,
                 width: width,
                 height: height,
+                is_active: isFirstPlan // Auto-set active if it's the first one
             })
             .select()
             .single();
@@ -342,6 +545,50 @@ export async function getPlans(projectId: string): Promise<Plan[]> {
     }
 }
 
+/**
+ * Delete a plan (also deletes associated photo_placements via CASCADE)
+ */
+export async function deletePlan(planId: string): Promise<void> {
+    try {
+        // First get the plan to find the file URL
+        const { data: plan, error: fetchError } = await supabase
+            .from('plans')
+            .select('file_url')
+            .eq('id', planId)
+            .single();
+
+        if (fetchError) {
+            throw new Error(fetchError.message);
+        }
+
+        // Delete from database (CASCADE deletes photo_placements)
+        const { error: deleteError } = await supabase
+            .from('plans')
+            .delete()
+            .eq('id', planId);
+
+        if (deleteError) {
+            throw new Error(deleteError.message);
+        }
+
+        // Delete file from storage
+        if (plan?.file_url) {
+            // Extract file path from URL
+            // URL format: https://.../storage/v1/object/public/plans/{path}
+            const urlParts = plan.file_url.split('/plans/');
+            if (urlParts[1]) {
+                await supabase.storage
+                    .from('plans')
+                    .remove([urlParts[1]]);
+            }
+        }
+    } catch (error) {
+        console.error('Error deleting plan:', error);
+        throw error;
+    }
+}
+
+
 export interface Photo {
     id: string;
     project_id: string;
@@ -354,10 +601,16 @@ export interface Photo {
 
 // ... existing functions ...
 
+
+
 /**
  * Upload a photo to a project (directly to Supabase Storage)
  */
-export async function uploadPhoto(projectId: string, file: File): Promise<Photo> {
+export async function uploadPhoto(
+    projectId: string,
+    file: File,
+    autoPlace?: { planId: string; planWidth: number; planHeight: number }
+): Promise<Photo> {
     try {
         const authUserId = await getAuthUserId();
 
@@ -409,9 +662,77 @@ export async function uploadPhoto(projectId: string, file: File): Promise<Photo>
             throw new Error(`Failed to create photo record: ${dbError.message}`);
         }
 
+        // Handle Auto-Placement if requested
+        if (autoPlace && photoData) {
+            try {
+                const { x, y } = generateRandomPlacement(autoPlace.planWidth, autoPlace.planHeight);
+
+                await savePhotoPlacement({
+                    plan_id: autoPlace.planId,
+                    photo_id: photoData.id,
+                    x,
+                    y,
+                    placement_method: 'gps_suggested'
+                });
+            } catch (err) {
+                console.error("Auto-placement failed:", err);
+                // Don't fail the entire upload if placement fails, just log it
+            }
+        }
+
         return photoData;
     } catch (error) {
         console.error('Error uploading photo:', error);
+        throw error;
+    }
+}
+
+/**
+ * Delete multiple photos
+ */
+export async function deletePhotos(photoIds: string[]): Promise<void> {
+    try {
+        // 1. Get file URLs to delete from storage
+        const { data: photos, error: fetchError } = await supabase
+            .from('photos')
+            .select('file_url')
+            .in('id', photoIds);
+
+        if (fetchError) {
+            throw new Error(fetchError.message);
+        }
+
+        // 2. Delete from database (CASCADE should handle placements if set up, 
+        // otherwise we might need to delete placements first. Assuming CASCADE for now)
+        const { error: deleteError } = await supabase
+            .from('photos')
+            .delete()
+            .in('id', photoIds);
+
+        if (deleteError) {
+            throw new Error(deleteError.message);
+        }
+
+        // 3. Delete files from storage
+        const filesToDelete = photos
+            ?.map(p => {
+                const urlParts = p.file_url.split('/photos/');
+                return urlParts[1];
+            })
+            .filter(Boolean) || [];
+
+        if (filesToDelete.length > 0) {
+            const { error: storageError } = await supabase.storage
+                .from('photos')
+                .remove(filesToDelete);
+
+            if (storageError) {
+                console.error('Error deleting files from storage:', storageError);
+                // Don't throw here, as DB records are already gone
+            }
+        }
+    } catch (error) {
+        console.error('Error deleting photos:', error);
         throw error;
     }
 }

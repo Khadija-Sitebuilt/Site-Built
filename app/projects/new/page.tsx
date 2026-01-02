@@ -15,8 +15,6 @@ export default function NewProjectPage() {
     const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
     const totalSteps = 5;
 
-
-
     // Form State
     const [formData, setFormData] = useState({
         projectName: "",
@@ -28,7 +26,6 @@ export default function NewProjectPage() {
         estimatedBudget: ""
     });
 
-    // File State
     // File State
     const [floorPlanFile, setFloorPlanFile] = useState<File | null>(null);
     const [photos, setPhotos] = useState<File[]>([]);
@@ -148,9 +145,10 @@ export default function NewProjectPage() {
             setCreatedProjectId(project.id);
 
             // Upload floor plan if one was selected
+            let uploadedPlan = null;
             if (floorPlanFile) {
                 try {
-                    await uploadPlan(project.id, floorPlanFile);
+                    uploadedPlan = await uploadPlan(project.id, floorPlanFile);
                     console.log('Successfully uploaded floor plan');
                 } catch (uploadErr) {
                     console.error('Error uploading floor plan:', uploadErr);
@@ -161,7 +159,11 @@ export default function NewProjectPage() {
             // Upload photos if any were selected
             if (photos.length > 0) {
                 const photoUploadPromises = photos.map(photo =>
-                    uploadPhoto(project.id, photo)
+                    uploadPhoto(project.id, photo, uploadedPlan ? {
+                        planId: uploadedPlan.id,
+                        planWidth: uploadedPlan.width,
+                        planHeight: uploadedPlan.height
+                    } : undefined)
                 );
 
                 try {
@@ -195,6 +197,13 @@ export default function NewProjectPage() {
         <div className="max-w-3xl mx-auto pt-20 pb-20 px-4 md:px-0">
             {/* Header */}
             <div className="mb-8">
+                <Link
+                    href="/dashboard"
+                    className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Dashboard
+                </Link>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">New Project Wizard</h1>
                 <p className="text-gray-600">Follow these steps to set up your mapping project</p>
             </div>
@@ -819,19 +828,19 @@ export default function NewProjectPage() {
                                     <div className="space-y-6">
                                         <div>
                                             <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Project Name</label>
-                                            <p className="text-lg font-semibold text-gray-900">Downtown Office Complex</p>
+                                            <p className="text-lg font-semibold text-gray-900">{formData.projectName}</p>
                                         </div>
                                         <div>
                                             <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Location</label>
                                             <div className="flex items-center gap-1.5 text-gray-600">
                                                 <MapPin className="w-4 h-4" />
-                                                <span className="text-sm">123 Main St, City Center</span>
+                                                <span className="text-sm">{formData.location}</span>
                                             </div>
                                         </div>
                                         <div>
                                             <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Description</label>
                                             <p className="text-sm text-gray-600 leading-relaxed">
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                                {formData.description || "No description provided."}
                                             </p>
                                         </div>
                                     </div>
@@ -853,10 +862,14 @@ export default function NewProjectPage() {
                                                 </div>
                                                 <div>
                                                     <p className="font-medium text-gray-900 text-sm">Floor Plan</p>
-                                                    <p className="text-xs text-gray-500">Abstrak.jpg (41.51 KB)</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {floorPlanFile ? `${floorPlanFile.name} (${(floorPlanFile.size / 1024).toFixed(2)} KB)` : "No file selected"}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <span className="px-3 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded-full">Ready</span>
+                                            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${floorPlanFile ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"}`}>
+                                                {floorPlanFile ? "Ready" : "Missing"}
+                                            </span>
                                         </div>
 
                                         {/* Photos Item */}

@@ -38,18 +38,14 @@ export interface Detection {
     photoId: string;
     label: string;
     confidence: number;
-    boundingBox: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    };
+    bbox: [number, number, number, number]; // [x, y, width, height]
 }
 
 export interface PinPosition {
-    x: number; // X coordinate as percentage (0-100) of plan width
-    y: number; // Y coordinate as percentage (0-100) of plan height
+    x: number; // X coordinate as percentage (or absolute) - based on usage
+    y: number; // Y coordinate as percentage (or absolute) - based on usage
     planId: string; // Which plan this pin is on
+    placementMethod?: 'manual' | 'gps_suggested' | 'gps_exact';
 }
 
 export interface Photo {
@@ -131,14 +127,14 @@ export const mockProjects: ProjectWithDetails[] = [
                         photoId: 'photo-001',
                         label: 'Door Frame',
                         confidence: 0.95,
-                        boundingBox: { x: 0.1, y: 0.2, width: 0.3, height: 0.6 }
+                        bbox: [0.1, 0.2, 0.3, 0.6]
                     },
                     {
                         id: 'det-002',
                         photoId: 'photo-001',
                         label: 'Signage',
                         confidence: 0.88,
-                        boundingBox: { x: 0.6, y: 0.3, width: 0.15, height: 0.1 }
+                        bbox: [0.6, 0.3, 0.15, 0.1]
                     }
                 ]
             },

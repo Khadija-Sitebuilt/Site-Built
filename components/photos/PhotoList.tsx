@@ -10,6 +10,10 @@ interface PhotoListProps {
     onViewModeChange?: (mode: 'grid' | 'list') => void;
     onPhotoClick?: (photo: Photo) => void;
     showViewToggle?: boolean;
+    selectedIds?: Set<string>;
+    onToggleSelect?: (photoId: string) => void;
+    selectionMode?: boolean;
+    onAutoPlace?: (photoId: string) => void; // New prop
 }
 
 export default function PhotoList({
@@ -17,7 +21,11 @@ export default function PhotoList({
     viewMode = 'grid',
     onViewModeChange,
     onPhotoClick,
-    showViewToggle = true
+    showViewToggle = true,
+    selectedIds,
+    onToggleSelect,
+    selectionMode = false,
+    onAutoPlace
 }: PhotoListProps) {
 
     if (photos.length === 0) {
@@ -37,8 +45,8 @@ export default function PhotoList({
                         <button
                             onClick={() => onViewModeChange('grid')}
                             className={`p-2 rounded transition-colors ${viewMode === 'grid'
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                             title="Grid View"
                         >
@@ -47,8 +55,8 @@ export default function PhotoList({
                         <button
                             onClick={() => onViewModeChange('list')}
                             className={`p-2 rounded transition-colors ${viewMode === 'list'
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                             title="List View"
                         >
@@ -70,6 +78,10 @@ export default function PhotoList({
                         photo={photo}
                         viewMode={viewMode}
                         onClick={() => onPhotoClick?.(photo)}
+                        selected={selectedIds?.has(photo.id)}
+                        onToggleSelect={() => onToggleSelect?.(photo.id)}
+                        selectionMode={selectionMode}
+                        onAutoPlace={onAutoPlace}
                     />
                 ))}
             </div>

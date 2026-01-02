@@ -13,40 +13,44 @@ export default function PlacementStats({ total, placed, unplaced }: PlacementSta
     const percentage = total > 0 ? Math.round((placed / total) * 100) : 0;
 
     return (
-        <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm">
-            <div className="flex items-center justify-between mb-2">
-                <div>
+        <div className="bg-white border border-gray-200 rounded-xl p-5 mb-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
                     <h3 className="text-sm font-semibold text-gray-900">Placement Progress</h3>
-                    <p className="text-xs text-gray-500">
-                        {placed} of {total} photos placed
-                    </p>
+                    <span className="text-sm font-bold text-blue-600">{percentage}%</span>
                 </div>
-                <div className="text-right">
-                    <span className="text-2xl font-bold text-gray-900">{percentage}%</span>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div
+                        className="bg-blue-600 h-full rounded-full transition-all duration-500 ease-out"
+                        style={{ width: `${percentage}%` }}
+                    />
                 </div>
             </div>
 
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                <div
-                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out"
-                    style={{ width: `${percentage}%` }}
-                ></div>
-            </div>
-
-            {/* Legend / Details */}
-            <div className="flex items-center gap-6 mt-4 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-500" />
-                    <span className="text-xs text-gray-600 font-medium">
-                        {placed} Placed
-                    </span>
+            {/* Legend / Stats Grid */}
+            <div className="flex items-center gap-8 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-8">
+                <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        <span className="text-lg font-bold text-gray-900">{placed}</span>
+                    </div>
+                    <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Placed</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-amber-500" />
-                    <span className="text-xs text-gray-600 font-medium">
-                        {unplaced} Unplaced
-                    </span>
+                <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                        <div className="w-4 h-4 rounded-full border-2 border-amber-400 border-dashed" />
+                        <span className="text-lg font-bold text-gray-900">{unplaced}</span>
+                    </div>
+                    <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Pending</span>
+                </div>
+                <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                        <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
+                        <span className="text-lg font-bold text-gray-900">{total}</span>
+                    </div>
+                    <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Total</span>
                 </div>
             </div>
         </div>

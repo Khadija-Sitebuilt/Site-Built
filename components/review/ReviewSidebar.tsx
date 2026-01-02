@@ -65,29 +65,35 @@ export default function ReviewSidebar({ photos, selectedPhotoId, onPhotoSelect, 
                         placeholder="Search photos..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
                 </div>
 
-                {/* Filters */}
-                <div className="flex bg-gray-100 p-1 rounded-lg">
+                {/* Filters - Segmented Control */}
+                <div className="flex p-1 bg-gray-100/80 rounded-lg">
                     <button
                         onClick={() => setFilter('all')}
-                        className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${filter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                        className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-all ${filter === 'all'
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-900'
                             }`}
                     >
                         All
                     </button>
                     <button
                         onClick={() => setFilter('placed')}
-                        className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${filter === 'placed' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                        className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-all ${filter === 'placed'
+                            ? 'bg-white text-emerald-700 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-900'
                             }`}
                     >
                         Placed
                     </button>
                     <button
                         onClick={() => setFilter('unplaced')}
-                        className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-colors ${filter === 'unplaced' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                        className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-all ${filter === 'unplaced'
+                            ? 'bg-white text-amber-700 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-900'
                             }`}
                     >
                         Unplaced
