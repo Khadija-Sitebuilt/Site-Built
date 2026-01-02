@@ -56,7 +56,7 @@ export default function ReviewPlanView({
     }
 
     return (
-        <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-100">
+        <div className="flex-1 flex flex-col h-96 lg:h-full overflow-hidden bg-gray-100">
             {/* Plan Viewer */}
             <div className="flex-1 relative">
                 <PlanViewer

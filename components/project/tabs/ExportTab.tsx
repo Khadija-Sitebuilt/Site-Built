@@ -62,7 +62,7 @@ export default function ExportTab() {
 
             <div className="bg-white border rounded-2xl shadow-sm overflow-hidden mb-8">
                 <div className="p-8">
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
                                 <FileText className="w-6 h-6" />
@@ -77,7 +77,7 @@ export default function ExportTab() {
                                 href={exportUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                                className="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-colors font-medium w-full md:w-auto"
                             >
                                 <Download className="w-4 h-4" />
                                 View Report
@@ -86,7 +86,7 @@ export default function ExportTab() {
                             <button
                                 onClick={handleExport}
                                 disabled={isExporting}
-                                className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto"
                             >
                                 {isExporting ? (
                                     <>

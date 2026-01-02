@@ -187,7 +187,7 @@ export default function ReviewTab({ projectId }: ReviewTabProps) {
                 unplaced={unplacedCount}
             />
 
-            <div className="flex bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 h-[calc(100vh-350px)] min-h-[600px] relative">
+            <div className="flex flex-col lg:flex-row bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 lg:h-[calc(100vh-350px)] min-h-[400px] lg:min-h-[600px] relative">
                 {/* Toast Notification */}
                 {toast && (
                     <div className={`absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg shadow-lg text-sm font-medium transition-all ${toast.type === 'success' ? 'bg-emerald-600 text-white' :
@@ -197,7 +197,7 @@ export default function ReviewTab({ projectId }: ReviewTabProps) {
                     </div>
                 )}
 
-                {/* Left: Plan Viewer */}
+                {/* Left/Top: Plan Viewer */}
                 <ReviewPlanView
                     plans={plans}
                     photos={photos}
@@ -206,7 +206,7 @@ export default function ReviewTab({ projectId }: ReviewTabProps) {
                     onPinPlace={handlePinPlace}
                 />
 
-                {/* Right: Sidebar */}
+                {/* Right/Bottom: Sidebar */}
                 <ReviewSidebar
                     photos={photos}
                     selectedPhotoId={selectedPhotoId}
