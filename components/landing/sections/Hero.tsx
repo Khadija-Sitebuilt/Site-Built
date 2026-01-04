@@ -7,7 +7,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center overflow-clip px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-20 md:py-32 lg:py-[200px] w-full"
+      className="box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center overflow-clip px-4 sm:px-8 md:px-12 lg:px-12 xl:px-[120px] py-12 sm:py-20 md:py-32 lg:py-[200px] w-full"
       style={{
         background:
           "linear-gradient(180deg, rgba(249,250,251,1) 55%, rgba(84,122,204,0.2) 71%, rgba(11,64,182,0.05) 95%)",
@@ -60,7 +60,7 @@ export function Hero() {
           </div>
         </div>
         <div
-          className="aspect-[4/3] sm:aspect-[16/10] md:aspect-[16/9] lg:aspect-[1280/720] bg-no-repeat border border-blue-600 border-solid rounded-[8px] sm:rounded-[12px] md:rounded-[16px] lg:rounded-[20px] shadow-[0px_12px_24px_2px_rgba(23,93,247,0.15)] sm:shadow-[0px_15px_28px_3px_rgba(23,93,247,0.18)] md:shadow-[0px_18px_33px_4px_rgba(23,93,247,0.21)] shrink-0 w-full relative bg-contain bg-center"
+          className="aspect-[4/3] sm:aspect-[16/10] md:aspect-[16/9] lg:aspect-[1280/720] bg-no-repeat border border-blue-600 border-solid rounded-[8px] sm:rounded-[12px] md:rounded-[16px] lg:rounded-[20px] shadow-[0px_12px_24px_2px_rgba(23,93,247,0.15)] sm:shadow-[0px_15px_28px_3px_rgba(23,93,247,0.18)] md:shadow-[0px_18px_33px_4px_rgba(23,93,247,0.21)] shrink-0 w-full relative bg-cover bg-top"
           style={{ backgroundImage: `url('${images.heroPlaceholder}')` }}
         />
         <div className="absolute left-[8%] lg:left-[10%] xl:left-[15%] 2xl:left-[205px] pointer-events-none rounded-full w-[80px] h-[80px] xl:w-[100px] xl:h-[100px] 2xl:w-[120px] 2xl:h-[120px] top-[140px] xl:top-[150px] 2xl:top-[159px] hidden lg:block">

@@ -35,7 +35,7 @@ export function Navigation() {
   }, []);
 
   return (
-    <nav className="bg-gray-50 border-b-[1.25px] border-gray-100 border-l-0 border-r-0 border-solid border-t-0 box-border flex flex-col min-h-[65px] items-start pb-[1.25px] pt-0 px-4 md:px-8 lg:px-[120px] sticky top-0 w-full z-50">
+    <nav className="bg-gray-50 border-b-[1.25px] border-gray-100 border-l-0 border-r-0 border-solid border-t-0 box-border flex flex-col min-h-[65px] items-start pb-[1.25px] pt-0 px-4 md:px-8 lg:px-12 xl:px-[120px] sticky top-0 w-full z-50">
       <div className="flex min-h-[63.984px] items-center justify-between relative shrink-0 w-full">
         <div className="relative shrink-0 flex items-center lg:flex-[1_0_0] lg:min-h-px lg:min-w-px">
           <a href="#hero">
@@ -47,7 +47,7 @@ export function Navigation() {
         <div className="hidden lg:flex h-[24px] relative shrink-0">
           <div className="flex gap-3 md:gap-4 lg:gap-5 xl:gap-6 h-[24px] items-center justify-center relative">
             <NavLink link="How it Works" href="#howitworks" isActive={activeSection === "howitworks"} className="cursor-pointer relative shrink-0" />
-            <NavLink link="Benefit" href="#benefits" isActive={activeSection === "benefits"} className="relative shrink-0" />
+            <NavLink link="Benefits" href="#benefits" isActive={activeSection === "benefits"} className="relative shrink-0" />
             <NavLink link="Pricing" href="#pricing" isActive={activeSection === "pricing"} className="cursor-pointer relative shrink-0" />
             <NavLink link="Contact" href="#contact" isActive={activeSection === "contact"} className="relative shrink-0" />
             <NavLink link="FAQ" href="#faq" isActive={activeSection === "faq"} className="relative shrink-0" />
@@ -93,7 +93,7 @@ export function Navigation() {
         <div className="lg:hidden w-full pb-4 pt-2 flex flex-col gap-4">
           <div className="flex flex-col gap-3">
             <NavLink link="How it Works" href="#howitworks" isActive={activeSection === "howitworks"} className="cursor-pointer" />
-            <NavLink link="Benefit" href="#benefits" isActive={activeSection === "benefits"} />
+            <NavLink link="Benefits" href="#benefits" isActive={activeSection === "benefits"} />
             <NavLink link="Pricing" href="#pricing" isActive={activeSection === "pricing"} className="cursor-pointer" />
             <NavLink link="Contact" href="#contact" isActive={activeSection === "contact"} />
             <NavLink link="FAQ" href="#faq" isActive={activeSection === "faq"} />

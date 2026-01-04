@@ -43,12 +43,12 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="bg-gray-50 box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center justify-center left-0 px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
+    <section id="faq" className="bg-gray-50 box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center justify-center left-0 px-4 sm:px-8 md:px-12 lg:px-12 xl:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
       <div className="flex flex-col gap-4 md:gap-6 items-center leading-[normal] relative shrink-0 text-center w-full max-w-[1280px]">
-        <div className="font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-[0px] text-3xl sm:text-4xl lg:text-5xl text-neutral-950 tracking-[-0.96px]">
-          <p className="mb-0">Frequently Asked </p>
-          <p className="font-['Inter',sans-serif] font-normal italic text-green-600">Questions</p>
-        </div>
+        <h2 className="font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-center text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] leading-[1.2]">
+          <span className="block">Frequently Asked</span>
+          <span className="block font-['Inter',sans-serif] font-normal italic text-green-600">Questions</span>
+        </h2>
         <p className="flex-[1_0_0] font-['Open_Sans',sans-serif] font-normal min-h-px min-w-px relative shrink-0 text-[#717182] text-base md:text-lg w-full max-w-[768px] whitespace-pre-wrap">
           Clear answers to help you get started.
         </p>
