@@ -43,7 +43,14 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="bg-gray-50 box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center justify-center left-0 px-4 sm:px-8 md:px-12 lg:px-12 xl:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
+    <section
+      id="faq"
+      className="box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center justify-center left-0 px-4 sm:px-8 md:px-12 lg:px-12 xl:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full"
+      style={{
+        background:
+          "linear-gradient(180deg, rgba(249,250,251,1) 55%, rgba(84,122,204,0.2) 71%, rgba(11,64,182,0.05) 95%)",
+      }}
+    >
       <div className="flex flex-col gap-4 md:gap-6 items-center leading-[normal] relative shrink-0 text-center w-full max-w-[1280px]">
         <h2 className="font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-center text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] leading-[1.2]">
           <span className="block">Frequently Asked</span>

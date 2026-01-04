@@ -51,7 +51,7 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center justify-center left-0 px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
+    <section id="contact" className="bg-white box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center justify-center left-0 px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
       <div className="flex flex-col gap-4 md:gap-6 items-center leading-[0] relative shrink-0 text-center w-full max-w-[1280px]">
         <div className="font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-[0px] text-neutral-950 tracking-[-0.96px]">
           <p className="leading-[normal] mb-0 text-3xl sm:text-4xl lg:text-5xl">Contact Us at</p>

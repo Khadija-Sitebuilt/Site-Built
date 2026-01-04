@@ -69,7 +69,13 @@ export function Testimonials() {
   );
 
   return (
-    <section className="bg-gray-50 box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center left-0 px-4 sm:px-8 md:px-12 lg:px-12 xl:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
+    <section
+      className="box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center left-0 px-4 sm:px-8 md:px-12 lg:px-12 xl:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full"
+      style={{
+        background:
+          "linear-gradient(180deg, rgba(249,250,251,1) 55%, rgba(84,122,204,0.2) 71%, rgba(11,64,182,0.05) 95%)",
+      }}
+    >
       <div className="flex flex-col gap-4 md:gap-6 items-start relative shrink-0 w-full max-w-[1280px] mx-auto">
         <div className="box-border flex gap-[10px] items-center justify-center px-4 sm:px-0 py-0 relative shrink-0 w-full">
           <h2 className="font-['Inter',sans-serif] font-bold leading-[1.2] not-italic relative shrink-0 text-center text-neutral-950 tracking-[-0.96px]">
