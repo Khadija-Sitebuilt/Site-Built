@@ -89,7 +89,7 @@ export function FAQ() {
                     } relative rounded-[8px] shrink-0 w-full text-left`}
                   aria-expanded={isExpanded}
                 >
-                  <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-base md:text-lg text-neutral-950 tracking-[-0.36px]">
+                  <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative text-base md:text-lg text-neutral-950 tracking-[-0.36px] pr-4">
                     {item.question}
                   </span>
                   <span className="relative shrink-0 size-5 text-slate-600 flex items-center justify-center">
@@ -98,7 +98,7 @@ export function FAQ() {
                 </button>
                 {isExpanded && item.answer && (
                   <div className="box-border flex items-start overflow-clip pb-4 md:pb-6 pt-0 px-0 relative shrink-0 w-full">
-                    <p className="flex-[1_0_0] font-['Open_Sans',sans-serif] font-normal leading-[normal] min-h-px min-w-px relative shrink-0 text-[#717182] text-sm md:text-base whitespace-pre-wrap">
+                    <p className="flex-1 font-['Open_Sans',sans-serif] font-normal leading-[normal] min-w-0 relative text-[#717182] text-sm md:text-base whitespace-pre-wrap break-words">
                       {item.answer}
                     </p>
                   </div>

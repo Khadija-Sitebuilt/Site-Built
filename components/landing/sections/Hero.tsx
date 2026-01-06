@@ -31,7 +31,7 @@ export function Hero() {
               <p className="leading-[1.2] text-3xl sm:text-4xl lg:text-5xl tracking-[-0.96px] text-black">
                 <span className="font-['Inter',sans-serif] font-normal italic text-green-600">Verified</span>
                 <span className="font-['Inter',sans-serif] font-bold not-italic text-black"> </span>
-                <span className="font-['Inter',sans-serif] font-bold not-italic text-black">As-Builts</span>
+                <span className="font-['Inter',sans-serif] font-bold not-italic text-black">As Builts</span>
                 <span className="font-['Inter',sans-serif] font-bold not-italic text-black"> in Minutes.</span>
               </p>
             </div>

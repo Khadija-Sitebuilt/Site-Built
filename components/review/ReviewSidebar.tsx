@@ -52,7 +52,7 @@ export default function ReviewSidebar({ photos, selectedPhotoId, onPhotoSelect, 
     }, [filteredPhotos, selectedPhotoId, onPhotoSelect]);
 
     return (
-        <div className="flex flex-col h-full lg:h-auto bg-white border-t lg:border-t-0 lg:border-l border-gray-200 w-full lg:w-80 xl:w-96 flex-shrink-0 max-h-96 lg:max-h-none overflow-hidden">
+        <div className="flex flex-col h-full lg:h-full bg-white border-t lg:border-t-0 lg:border-l border-gray-200 w-full lg:w-80 xl:w-96 flex-shrink-0 max-h-96 lg:max-h-none overflow-hidden">
             {/* Header */}
             <div className="p-4 border-b border-gray-200">
                 <h3 className="font-medium text-gray-900 mb-4">Photos ({filteredPhotos.length})</h3>
