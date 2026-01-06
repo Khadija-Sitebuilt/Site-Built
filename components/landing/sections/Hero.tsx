@@ -1,9 +1,14 @@
+'use client';
+
 import Link from "next/link";
 import { Play } from "lucide-react";
 import { images } from "../assets";
 import { ArrowIcon } from "../shared/ArrowIcon";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 export function Hero() {
+  const headingAnim = useScrollAnimation({ threshold: 0.2 });
+
   return (
     <section
       id="hero"
@@ -16,7 +21,10 @@ export function Hero() {
       <div className="flex flex-col gap-10 md:gap-16 lg:gap-20 items-center max-w-[1280px] relative shrink-0 w-full">
         <div className="flex flex-col gap-6 md:gap-8 items-center max-w-full md:max-w-[768px] relative shrink-0 w-full px-4 sm:px-0">
           <div className="flex flex-col gap-4 md:gap-6 items-center leading-[0] relative shrink-0 text-center w-full">
-            <div className="font-['Inter',sans-serif] font-bold relative shrink-0 text-[0px] w-full whitespace-pre-wrap">
+            <div
+              ref={headingAnim.ref}
+              className={`font-['Inter',sans-serif] font-bold relative shrink-0 text-[0px] w-full whitespace-pre-wrap ${headingAnim.isVisible ? 'animate-blur-in' : 'opacity-0-animate'}`}
+            >
               <p className="font-['Inter',sans-serif] leading-[1.2] mb-0 not-italic text-3xl sm:text-4xl lg:text-5xl tracking-[-0.96px] text-black">
                 Turn Site Photos into{" "}
               </p>
@@ -27,14 +35,18 @@ export function Hero() {
                 <span className="font-['Inter',sans-serif] font-bold not-italic text-black"> in Minutes.</span>
               </p>
             </div>
-            <div className="font-['Open_Sans',sans-serif] font-normal leading-[normal] relative shrink-0 text-base md:text-lg text-slate-600 w-full whitespace-pre-wrap">
+            <div
+              className="font-['Open_Sans',sans-serif] font-normal leading-[normal] relative shrink-0 text-base md:text-lg text-slate-600 w-full whitespace-pre-wrap"
+            >
               <p className="mb-0">
                 Upload geo-tagged photos, map them to floor plans, and{" "}
               </p>
               <p>generate accurate As-Built reports automatically.</p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 min-h-[60px] items-center justify-center relative shrink-0 w-full">
+          <div
+            className="flex flex-col sm:flex-row gap-4 min-h-[60px] items-center justify-center relative shrink-0 w-full"
+          >
             <Link
               href="/signup"
               className="group bg-blue-600 h-[60px] w-full sm:w-auto relative rounded-[30px] shrink-0 transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25"

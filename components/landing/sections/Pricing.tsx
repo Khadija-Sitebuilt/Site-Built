@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowIcon } from "../shared/ArrowIcon";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const plans = [
   {
@@ -87,19 +88,27 @@ const plans = [
 
 export function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
+  const titleAnim = useScrollAnimation({ threshold: 0.2 });
+  const descAnim = useScrollAnimation({ threshold: 0.2 });
 
   return (
     <section id="pricing" className="bg-gray-50 box-border flex flex-col gap-12 md:gap-16 lg:gap-[80px] items-center justify-center px-4 sm:px-8 md:px-12 lg:px-12 xl:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] relative w-full">
       <div className="flex flex-col gap-12 md:gap-16 lg:gap-[80px] items-center max-w-[1280px] relative shrink-0 w-full">
         <div className="box-border flex flex-col gap-4 md:gap-6 items-center not-italic px-4 sm:px-0 py-0 relative shrink-0 text-center w-full">
-          <h2 className="font-['Inter',sans-serif] font-bold leading-[1.2] relative shrink-0 text-center text-neutral-950 tracking-[-0.96px]">
+          <h2
+            ref={titleAnim.ref}
+            className={`font-['Inter',sans-serif] font-bold leading-[1.2] relative shrink-0 text-center text-neutral-950 tracking-[-0.96px] ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
+          >
             <span className="block text-3xl sm:text-4xl">Simple,</span>
             <span className="block text-3xl sm:text-4xl">
               <span>Transparent </span>
               <span className="font-['Inter',sans-serif] font-normal italic text-green-600 tracking-[-0.96px]">Pricing</span>
             </span>
           </h2>
-          <p className="font-['Arial',sans-serif] leading-[28px] min-w-full relative shrink-0 text-base md:text-lg text-slate-600 w-[min-content] whitespace-pre-wrap">
+          <p
+            ref={descAnim.ref}
+            className={`font-['Arial',sans-serif] leading-[28px] min-w-full relative shrink-0 text-base md:text-lg text-slate-600 w-[min-content] whitespace-pre-wrap ${descAnim.isVisible ? 'animate-fade-in-up animation-delay-200' : 'opacity-0-animate'}`}
+          >
             Choose the plan that fits your team size and project needs.
           </p>
         </div>

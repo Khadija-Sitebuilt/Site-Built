@@ -1,5 +1,8 @@
+'use client';
+
 import { Clock, ShieldCheck, Upload } from "lucide-react";
 import { BenefitCard } from "../shared/BenefitCard";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const benefits = [
   {
@@ -23,6 +26,14 @@ const benefits = [
 ];
 
 export function Benefits() {
+  const titleAnim = useScrollAnimation({ threshold: 0.2 });
+  const descAnim = useScrollAnimation({ threshold: 0.2 });
+  const card1Anim = useScrollAnimation({ threshold: 0.1 });
+  const card2Anim = useScrollAnimation({ threshold: 0.1 });
+  const card3Anim = useScrollAnimation({ threshold: 0.1 });
+
+  const cardAnims = [card1Anim, card2Anim, card3Anim];
+
   return (
     <section
       id="benefits"
@@ -33,26 +44,41 @@ export function Benefits() {
       }}
     >
       <div className="box-border flex flex-col gap-4 md:gap-6 items-center leading-[0] not-italic px-4 sm:px-0 py-0 relative shrink-0 text-center w-full max-w-[1280px] mx-auto">
-        <h2 className="font-['Inter',sans-serif] font-bold leading-[normal] relative shrink-0 text-[0px] text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px]">
+        <h2
+          ref={titleAnim.ref}
+          className={`font-['Inter',sans-serif] font-bold leading-[normal] relative shrink-0 text-[0px] text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
+        >
           <span className="font-['Inter',sans-serif] font-normal italic">Why</span> <span className="text-blue-600">Site</span>
           <span className="text-green-600">Built?</span>
         </h2>
-        <div className="font-['Arial',sans-serif] leading-[28px] relative shrink-0 text-base md:text-lg text-slate-600">
+        <div
+          ref={descAnim.ref}
+          className={`font-['Arial',sans-serif] leading-[28px] relative shrink-0 text-base md:text-lg text-slate-600 ${descAnim.isVisible ? 'animate-fade-in-up animation-delay-200' : 'opacity-0-animate'}`}
+        >
           <p className="mb-0">Built to simplify site documentation </p>
           <p>for engineers, managers, and clients alike</p>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12 relative shrink-0 w-full max-w-[1280px] mx-auto">
-        {benefits.map((benefit, index) => (
-          <BenefitCard
-            key={index}
-            icon={true}
-            title={benefit.title}
-            description={benefit.description}
-            IconComponent={benefit.IconComponent}
-            descriptionFont={benefit.descriptionFont}
-          />
-        ))}
+        {benefits.map((benefit, index) => {
+          const anim = cardAnims[index];
+          const delays = ['animation-delay-400', 'animation-delay-500', 'animation-delay-600'];
+          return (
+            <div
+              key={index}
+              ref={anim.ref}
+              className={anim.isVisible ? `animate-fade-in-up ${delays[index]}` : 'opacity-0-animate'}
+            >
+              <BenefitCard
+                icon={true}
+                title={benefit.title}
+                description={benefit.description}
+                IconComponent={benefit.IconComponent}
+                descriptionFont={benefit.descriptionFont}
+              />
+            </div>
+          );
+        })}
       </div>
     </section>
   );

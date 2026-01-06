@@ -117,7 +117,7 @@ export default function SignupPage() {
             <div className="flex justify-center mb-6">
               <Link href="/" className="inline-block transition-transform duration-200 hover:scale-105">
                 <Image
-                  src="/images/landing/Logo.png"
+                  src="/images/sitebuilt.svg"
                   alt="SiteBuilt Logo"
                   width={120}
                   height={40}

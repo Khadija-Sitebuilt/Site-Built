@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -11,6 +13,11 @@ export function Contact() {
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Scroll animations
+  const titleAnim = useScrollAnimation({ threshold: 0.2 });
+  const descAnim = useScrollAnimation({ threshold: 0.2 });
+  const formAnim = useScrollAnimation<HTMLFormElement>({ threshold: 0.1 });
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -53,19 +60,29 @@ export function Contact() {
   return (
     <section id="contact" className="bg-white box-border flex flex-col gap-10 md:gap-16 lg:gap-20 items-center justify-center left-0 px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] w-full">
       <div className="flex flex-col gap-4 md:gap-6 items-center leading-[0] relative shrink-0 text-center w-full max-w-[1280px]">
-        <div className="font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-[0px] text-neutral-950 tracking-[-0.96px]">
-          <p className="leading-[normal] mb-0 text-3xl sm:text-4xl lg:text-5xl">Contact Us at</p>
-          <p className="font-['Inter',sans-serif] font-normal italic leading-[normal] text-3xl sm:text-4xl lg:text-5xl">
+        <div
+          ref={titleAnim.ref}
+          className={`font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-[0px] text-neutral-950 tracking-[-0.96px] ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
+        >
+          <p className="leading-[normal] mb-0 text-4xl">Contact Us at</p>
+          <p className="font-['Inter',sans-serif] font-normal italic leading-[normal] text-4xl">
             <span className="text-blue-600">Site</span>
             <span className="text-green-600">Built</span>
           </p>
         </div>
-        <div className="flex-[1_0_0] font-['Open_Sans',sans-serif] font-normal leading-[normal] min-h-px min-w-px relative shrink-0 text-[#717182] text-base md:text-lg w-full max-w-[768px] whitespace-pre-wrap">
+        <div
+          ref={descAnim.ref}
+          className={`flex-[1_0_0] font-['Open_Sans',sans-serif] font-normal leading-[normal] min-h-px min-w-px relative shrink-0 text-[#717182] text-base md:text-lg w-full max-w-[768px] whitespace-pre-wrap ${descAnim.isVisible ? 'animate-fade-in-up animation-delay-200' : 'opacity-0-animate'}`}
+        >
           <p className="mb-0">Tell us as much detail as possible so we </p>
           <p>can route your message to the right team.</p>
         </div>
       </div>
-      <form onSubmit={handleSubmit} className="bg-white border border-[rgba(0,0,0,0.1)] border-solid box-border flex flex-col items-center p-6 md:p-8 lg:p-[33px] relative rounded-[16px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] shrink-0 w-full max-w-[566px]">
+      <form
+        ref={formAnim.ref}
+        onSubmit={handleSubmit}
+        className={`bg-white border border-[rgba(0,0,0,0.1)] border-solid box-border flex flex-col items-center p-6 md:p-8 lg:p-[33px] relative rounded-[16px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] shrink-0 w-full max-w-[566px] ${formAnim.isVisible ? 'animate-fade-in-up animation-delay-400' : 'opacity-0-animate'}`}
+      >
         <div className="relative shrink-0 w-full">
           <div className="flex flex-col gap-6 items-center relative w-full">
             {/* Full Name */}

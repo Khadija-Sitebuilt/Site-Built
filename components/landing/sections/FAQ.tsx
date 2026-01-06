@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { ArrowIcon } from "../shared/ArrowIcon";
 import { useState } from "react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const faqItems = [
   {
@@ -41,6 +42,8 @@ const faqItems = [
 
 export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const titleAnim = useScrollAnimation({ threshold: 0.2 });
+  const descAnim = useScrollAnimation({ threshold: 0.2 });
 
   return (
     <section
@@ -52,11 +55,17 @@ export function FAQ() {
       }}
     >
       <div className="flex flex-col gap-4 md:gap-6 items-center leading-[normal] relative shrink-0 text-center w-full max-w-[1280px]">
-        <h2 className="font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-center text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] leading-[1.2]">
+        <h2
+          ref={titleAnim.ref}
+          className={`font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-center text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] leading-[1.2] ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
+        >
           <span className="block">Frequently Asked</span>
           <span className="block font-['Inter',sans-serif] font-normal italic text-green-600">Questions</span>
         </h2>
-        <p className="flex-[1_0_0] font-['Open_Sans',sans-serif] font-normal min-h-px min-w-px relative shrink-0 text-[#717182] text-base md:text-lg w-full max-w-[768px] whitespace-pre-wrap">
+        <p
+          ref={descAnim.ref}
+          className={`flex-[1_0_0] font-['Open_Sans',sans-serif] font-normal min-h-px min-w-px relative shrink-0 text-[#717182] text-base md:text-lg w-full max-w-[768px] whitespace-pre-wrap ${descAnim.isVisible ? 'animate-fade-in-up animation-delay-200' : 'opacity-0-animate'}`}
+        >
           Clear answers to help you get started.
         </p>
       </div>
