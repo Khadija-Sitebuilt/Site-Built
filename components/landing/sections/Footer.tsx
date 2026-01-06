@@ -17,7 +17,7 @@ export function Footer() {
               <Logo className="content-stretch flex gap-1 items-end justify-start relative shrink-0" />
             </div>
             <div className="flex gap-[10px] items-start justify-start relative shrink-0 w-full">
-              <p className="font-['Open_Sans',sans-serif] font-normal leading-[1.5] relative shrink-0 text-xs sm:text-sm md:text-base text-white md:whitespace-pre-line">
+              <p className="font-['Open_Sans',sans-serif] font-normal leading-[1.5] relative min-w-0 text-xs sm:text-sm md:text-base text-white whitespace-normal md:whitespace-pre-line break-words">
                 {`Streamlining construction project
 management through intelligent
 collaboration tools.`}

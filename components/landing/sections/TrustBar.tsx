@@ -1,7 +1,7 @@
 export function TrustBar() {
   return (
     <section className="bg-blue-600 box-border flex items-center justify-center px-4 sm:px-8 md:px-12 lg:px-[120px] py-4 md:py-6 w-full">
-      <div className="trustbar-marquee-container w-full max-w-[1280px]">
+      <div className="trustbar-marquee-container w-full max-w-[1280px] overflow-hidden">
         <div className="trustbar-marquee">
           {/* First sequence of brands */}
           <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Arial',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] tracking-wide">
