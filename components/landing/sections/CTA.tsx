@@ -51,7 +51,7 @@ export function CTA() {
             </div>
           </Link>
           <Link
-            href="/contact"
+            href="#contact"
             className="group border border-blue-600 border-solid flex-1 sm:flex-[1_0_0] h-[60px] min-h-px w-full sm:min-w-[200px] relative rounded-[30px] shrink-0 transition-all duration-200 hover:bg-blue-50 hover:border-blue-700"
           >
             <div className="flex gap-2 h-[60px] items-center justify-center px-5 py-[10px] relative w-full">

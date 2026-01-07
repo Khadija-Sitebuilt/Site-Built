@@ -114,7 +114,7 @@ export function FAQ() {
             </p>
           </div>
           <Link
-            href="/contact"
+            href="#contact"
             className="group border border-blue-600 border-solid box-border flex gap-2 h-[60px] items-center justify-center px-5 py-[10px] relative rounded-[30px] shrink-0 w-full sm:w-auto min-w-[275px] transition-all duration-200 hover:bg-blue-50 hover:border-blue-700"
           >
             <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-sm md:text-base text-blue-600 group-hover:text-blue-700 transition-colors">
