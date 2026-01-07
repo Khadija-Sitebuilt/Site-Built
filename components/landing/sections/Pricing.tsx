@@ -82,7 +82,7 @@ const plans = [
     buttonText: "Contact for Sales",
     buttonStyle: "border border-blue-600 text-blue-600 hover:bg-blue-50 hover:border-blue-700 transition-all duration-200",
     borderStyle: "border-[1.088px] border-[rgba(0,0,0,0.1)]",
-    link: "/contact",
+    link: "#contact",
   },
 ];
 
