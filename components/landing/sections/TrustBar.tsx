@@ -4,11 +4,11 @@ export function TrustBar() {
       <div className="trustbar-marquee-container w-full max-w-[1280px] overflow-hidden">
         <div className="trustbar-marquee">
           {/* First sequence of brands */}
-          <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Arial',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] tracking-wide">
-            Logo
+          <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Arial',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] tracking-wide font-bold">
+            ApexBuild
           </div>
-          <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Open_Sans',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] font-semibold">
-            Logo
+          <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Open_Sans',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] font-semibold tracking-tight">
+            CoreStructure
           </div>
           <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Baloo_Tammudu_2',sans-serif] text-base sm:text-lg md:text-xl leading-[28px] tracking-tight">
             MetroConstruct
@@ -21,11 +21,11 @@ export function TrustBar() {
           </div>
 
           {/* Duplicate sequence for seamless marquee */}
-          <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Arial',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] tracking-wide">
-            Logo
+          <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Arial',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] tracking-wide font-bold">
+            ApexBuild
           </div>
-          <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Open_Sans',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] font-semibold">
-            Logo
+          <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Open_Sans',sans-serif] text-sm sm:text-base md:text-lg leading-[28px] font-semibold tracking-tight">
+            CoreStructure
           </div>
           <div className="flex h-12 md:h-16 min-w-[33.3333%] items-center justify-center rounded-[10px] px-3 md:px-4 text-white font-['Baloo_Tammudu_2',sans-serif] text-base sm:text-lg md:text-xl leading-[28px] tracking-tight">
             MetroConstruct

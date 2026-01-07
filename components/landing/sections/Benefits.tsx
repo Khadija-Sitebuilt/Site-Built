@@ -46,7 +46,7 @@ export function Benefits() {
       <div className="box-border flex flex-col gap-4 md:gap-6 items-center leading-[0] not-italic px-4 sm:px-0 py-0 relative shrink-0 text-center w-full max-w-[1280px] mx-auto">
         <h2
           ref={titleAnim.ref}
-          className={`font-['Inter',sans-serif] font-bold leading-[normal] relative shrink-0 text-[0px] text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
+          className={`font-['Inter',sans-serif] font-bold leading-[normal] relative shrink-0 text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
         >
           <span className="font-['Inter',sans-serif] font-normal italic">Why</span> <span className="text-blue-600">Site</span>
           <span className="text-green-600">Built?</span>

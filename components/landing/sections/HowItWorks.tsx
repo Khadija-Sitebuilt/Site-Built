@@ -36,7 +36,7 @@ export function HowItWorks() {
         <div className="flex flex-col gap-4 md:gap-6 items-start leading-[0] relative shrink-0 text-center w-full px-4 sm:px-0">
           <h2
             ref={titleAnim.ref}
-            className={`font-['Inter',sans-serif] font-bold leading-[normal] not-italic relative shrink-0 text-[0px] text-3xl sm:text-4xl tracking-[-0.96px] w-full max-w-full md:max-w-[768px] mx-auto whitespace-pre-wrap ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
+            className={`font-['Inter',sans-serif] font-bold leading-[normal] not-italic relative shrink-0 text-3xl sm:text-4xl tracking-[-0.96px] w-full max-w-full md:max-w-[768px] mx-auto whitespace-pre-wrap ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
           >
             <span className="text-black">How It </span>
             <span className="font-['Inter',sans-serif] font-normal italic text-green-600">Works</span>
