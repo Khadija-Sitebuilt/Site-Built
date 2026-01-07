@@ -16,7 +16,7 @@ const steps = [
   },
   {
     image: images.step3,
-    title: "Generate a polished, photo-\nverified As-Built report in seconds.",
+    title: "Generate a polished, photo-\nverified As-Builts in seconds.",
     description: "Share as PDF branded and\n client-ready",
   },
 ];
