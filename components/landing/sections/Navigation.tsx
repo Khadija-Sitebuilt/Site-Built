@@ -92,11 +92,11 @@ export function Navigation() {
       {mobileMenuOpen && (
         <div className="lg:hidden w-full pb-4 pt-2 flex flex-col gap-4">
           <div className="flex flex-col gap-3">
-            <NavLink link="How it Works" href="#howitworks" isActive={activeSection === "howitworks"} className="cursor-pointer" />
-            <NavLink link="Benefits" href="#benefits" isActive={activeSection === "benefits"} />
-            <NavLink link="Pricing" href="#pricing" isActive={activeSection === "pricing"} className="cursor-pointer" />
-            <NavLink link="Contact" href="#contact" isActive={activeSection === "contact"} />
-            <NavLink link="FAQ" href="#faq" isActive={activeSection === "faq"} />
+            <NavLink link="How it Works" href="#howitworks" isActive={activeSection === "howitworks"} className="cursor-pointer" onClick={() => setMobileMenuOpen(false)} />
+            <NavLink link="Benefits" href="#benefits" isActive={activeSection === "benefits"} onClick={() => setMobileMenuOpen(false)} />
+            <NavLink link="Pricing" href="#pricing" isActive={activeSection === "pricing"} className="cursor-pointer" onClick={() => setMobileMenuOpen(false)} />
+            <NavLink link="Contact" href="#contact" isActive={activeSection === "contact"} onClick={() => setMobileMenuOpen(false)} />
+            <NavLink link="FAQ" href="#faq" isActive={activeSection === "faq"} onClick={() => setMobileMenuOpen(false)} />
           </div>
           <div className="flex flex-col gap-2 pt-2">
             <Link
