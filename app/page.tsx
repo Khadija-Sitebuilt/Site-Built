@@ -6,10 +6,8 @@ import { Pricing } from "@/components/landing/sections/Pricing";
 import { TrustBar } from "@/components/landing/sections/TrustBar";
 import { Testimonials } from "@/components/landing/sections/Testimonials";
 import { FAQ } from "@/components/landing/sections/FAQ";
-// import { Contact } from "@/components/landing/sections/Contact";
 import { CTA } from "@/components/landing/sections/CTA";
 import { Footer } from "@/components/landing/sections/Footer";
-// import { HowItWorks } from "@/components/landing/sections/HowItWorks";
 
 export default function Home() {
   return (
@@ -17,12 +15,10 @@ export default function Home() {
       <Navigation />
       <Hero />
       <CoreFeatures />
-      {/* <HowItWorks /> */}
       <Benefits />
       <Pricing />
       <TrustBar />
       <Testimonials />
-      {/* <Contact /> */}
       <FAQ />
       <CTA />
       <Footer />

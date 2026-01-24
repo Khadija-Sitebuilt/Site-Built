@@ -133,7 +133,10 @@ export function Pricing() {
               onClick={() => setIsAnnual(false)}
               className={`cursor-pointer flex-[1_0_0] min-h-px min-w-px left-1 relative rounded-full shrink-0 transition-all duration-200 ${!isAnnual ? "bg-blue-600" : ""}`}
             >
-              <div className="flex gap-[10px] items-center justify-center px-6 pl-6 py-4 relative">
+              <div
+                //
+                className={`relative px-6 py-4 flex gap-[10px] items-center justify-center ${!isAnnual && "animate-expand"}`}
+              >
                 <p
                   className={`font-['Arial',sans-serif] leading-[24px] not-italic relative shrink-0 text-sm md:text-base ${!isAnnual ? "text-white" : "text-slate-600"}`}
                 >
