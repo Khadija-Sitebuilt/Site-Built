@@ -131,30 +131,57 @@ export function Pricing() {
           <div className="box-border flex items-center p-1 relative rounded-full shrink-0 w-full max-w-[273px]">
             <button
               onClick={() => setIsAnnual(false)}
-              className={`cursor-pointer flex-[1_0_0] min-h-px min-w-px left-1 relative rounded-full shrink-0 transition-all duration-200 ${!isAnnual ? "bg-blue-600" : ""}`}
+              className="cursor-pointer flex-[1_0_0] min-h-px w-35.25 h-14 min-w-px left-1 relative rounded-full overflow-clip shrink-0 transition-all duration-200"
             >
-              <div
-                //
-                className={`relative px-6 py-4 flex gap-[10px] items-center justify-center ${!isAnnual && "animate-expand"}`}
+              <span
+                className="absolute inset-0 rounded-full bg-blue-600"
+                style={
+                  !isAnnual
+                    ? {
+                        transition: "transform 0.3s ease-out",
+                        transform: "scale(1)",
+                      }
+                    : {
+                        transition:
+                          "transform 0.3s ease-out,background-color 0.4s ease-out",
+                        transform: "scale(0.88)",
+                        backgroundColor: "white",
+                      }
+                }
+              />
+
+              <span
+                className={`relative font-['Arial',sans-serif] text-sm md:text-base ${!isAnnual ? "text-white" : "transition-colors delay-300 text-slate-600"}`}
               >
-                <p
-                  className={`font-['Arial',sans-serif] leading-[24px] not-italic relative shrink-0 text-sm md:text-base ${!isAnnual ? "text-white" : "text-slate-600"}`}
-                >
-                  Monthly Plan
-                </p>
-              </div>
+                Monthly Plan
+              </span>
             </button>
             <button
               onClick={() => setIsAnnual(true)}
-              className={`cursor-pointer flex-[1_0_0] min-h-px min-w-px right-1 relative rounded-full shrink-0 transition-all duration-200 ${isAnnual ? "bg-green-600" : ""}`}
+              className="cursor-pointer flex-[1_0_0] min-h-px w-35.25 h-14 min-w-px right-1 relative rounded-full overflow-clip shrink-0 transition-all duration-200"
             >
-              <div className="flex gap-[10px] items-center justify-center px-6 pr-6 py-4 relative">
-                <p
-                  className={`font-['Arial',sans-serif] leading-[24px] not-italic relative shrink-0 text-sm md:text-base ${isAnnual ? "text-white" : "text-slate-600"}`}
-                >
-                  Annual Plan
-                </p>
-              </div>
+              <span
+                className="absolute inset-0 rounded-full bg-green-600"
+                style={
+                  isAnnual
+                    ? {
+                        transition: "transform 0.3s ease-out",
+                        transform: "scale(1)",
+                      }
+                    : {
+                        transition:
+                          "transform 0.3s ease-out,background-color 0.4s ease-out",
+                        transform: "scale(0.88)",
+                        backgroundColor: "white",
+                      }
+                }
+              />
+
+              <span
+                className={`relative font-['Arial',sans-serif] text-sm md:text-base ${isAnnual ? "text-white" : "transition-colors delay-300 text-slate-600"}`}
+              >
+                Annual Plan
+              </span>
             </button>
           </div>
           <div className="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-6 items-stretch justify-center relative shrink-0 w-full">
@@ -167,7 +194,7 @@ export function Pricing() {
               return (
                 <div
                   key={index}
-                  className={`${cardBg || "bg-white"} ${plan.borderStyle} border-solid box-border flex flex-col h-full min-h-[480px] items-center justify-between p-4 relative rounded-[11.424px] shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[280px]`}
+                  className={`${cardBg || "bg-white"} ${plan.borderStyle} border-solid box-border flex flex-col h-full min-h-[480px] items-center justify-between p-4 relative rounded-[11.424px] shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[280px] ${isAnnual ? "animate-annual-plan-cards" : "animate-monthly-plan-cards"}`}
                 >
                   <div className="flex flex-col items-start relative shrink-0 w-full flex-1">
                     <div
@@ -184,6 +211,7 @@ export function Pricing() {
                         <p
                           className={`font-jakarta leading-[32.641px] not-italic relative shrink-0 text-xl md:text-[33.75px] font-bold ${plan.priceColor || plan.textStyle || "text-blue-600"}`}
                         >
+                          {" "}
                           {plan.price || (
                             <>
                               <sup className="font-roboto text-[22px]">$</sup>

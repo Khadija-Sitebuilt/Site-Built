@@ -89,13 +89,23 @@ body {
   }
 }
 
-@keyframes expand {
+@keyframes annualPlanCards {
   from {
-    padding: 0px;
+    opacity: 0.4;
   }
 
   to {
-    padding: 16px 24px;
+    opacity: 1;
+  }
+}
+
+@keyframes monthlyPlanCards {
+  from {
+    opacity: 0.4;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 
@@ -112,8 +122,12 @@ body {
   animation: fadeIn 0.6s ease-out both;
 }
 
-.animate-expand {
-  animation: expand 0.6s ease-out both;
+.animate-annual-plan-cards {
+  animation: annualPlanCards 0.6s ease-in-out both;
+}
+
+.animate-monthly-plan-cards {
+  animation: monthlyPlanCards 0.6s ease-in-out both;
 }
 
 .animation-delay-100 {
