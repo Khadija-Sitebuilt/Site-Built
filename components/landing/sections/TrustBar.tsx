@@ -1,3 +1,5 @@
+import { images } from "../assets";
+
 export function TrustBar() {
   return (
     <section className="bg-blue-600 box-border flex items-center justify-center px-4 sm:px-8 md:px-12 lg:px-[120px] py-4 md:py-6 w-full">

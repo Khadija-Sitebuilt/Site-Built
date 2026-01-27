@@ -1,12 +1,27 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import {
+  Arimo,
+  Inter,
+  Outfit,
+  Plus_Jakarta_Sans,
+  Poppins,
+  Roboto,
+} from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const arimo = Arimo({ subsets: ["latin"], variable: "--font-arimo" });
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+});
+const roboto = Roboto({ subsets: ["latin"], variable: "--font-roboto" });
 
 export const metadata: Metadata = {
   title: "SiteBuilt - Construction Documentation Made Simple",
-  description: "Upload floor plans, geo-tagged photos, and create professional as-built documentation",
+  description:
+    "Upload floor plans, geo-tagged photos, and create professional as-built documentation",
 };
 
 import { PHProvider } from "@/components/PostHogProvider";
@@ -18,10 +33,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
-        <PHProvider>
-          {children}
-        </PHProvider>
+      <body
+        className={`${inter.className} ${outfit.variable} ${arimo.variable} ${jakarta.variable} ${roboto.variable} antialiased`}
+        suppressHydrationWarning
+      >
+        <PHProvider>{children}</PHProvider>
       </body>
     </html>
   );
