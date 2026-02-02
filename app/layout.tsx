@@ -4,7 +4,6 @@ import {
   Inter,
   Outfit,
   Plus_Jakarta_Sans,
-  Poppins,
   Roboto,
 } from "next/font/google";
 import "./globals.css";
