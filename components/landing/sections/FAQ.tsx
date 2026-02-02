@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -10,32 +9,38 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 const faqItems = [
   {
     question: "What is SiteBuilt?",
-    answer: "SiteBuilt is a tool that converts your site photos into accurate, aligned floor plans — fast and simple.",
+    answer:
+      "SiteBuilt is a tool that converts your site photos into accurate, aligned floor plans — fast and simple.",
     expanded: false,
   },
   {
     question: "Do I need CAD experience to use it?",
-    answer: "No. SiteBuilt is designed for field and project teams, not CAD specialists. If you can take photos and read a floor plan, you can use it.",
+    answer:
+      "No. SiteBuilt is designed for field and project teams, not CAD specialists. If you can take photos and read a floor plan, you can use it.",
     expanded: false,
   },
   {
     question: "How accurate are the plans?",
-    answer: "SiteBuilt is built to deliver construction-grade accuracy by combining geo-tagged photos, plan alignment, and review tools so your team can verify and adjust before export.",
+    answer:
+      "SiteBuilt is built to deliver construction-grade accuracy by combining geo-tagged photos, plan alignment, and review tools so your team can verify and adjust before export.",
     expanded: false,
   },
   {
     question: "What formats can I export to?",
-    answer: "You can export as project-ready PDFs for sharing, as well as CAD-friendly formats like DXF so your design and BIM teams can keep working in their existing tools.",
+    answer:
+      "You can export as project-ready PDFs for sharing, as well as CAD-friendly formats like DXF so your design and BIM teams can keep working in their existing tools.",
     expanded: false,
   },
   {
     question: "Is my data secure?",
-    answer: "Yes. SiteBuilt uses modern cloud security practices, including encrypted storage and access controls, so your project data stays protected.",
+    answer:
+      "Yes. SiteBuilt uses modern cloud security practices, including encrypted storage and access controls, so your project data stays protected.",
     expanded: false,
   },
   {
     question: "What's the difference between Per Project and Subscription?",
-    answer: "Per Project is ideal for one-off jobs where you pay per project or per batch of photos. Subscription is best for active teams who want predictable monthly pricing and volume discounts across multiple projects.",
+    answer:
+      "Per Project is ideal for one-off jobs where you pay per project or per batch of photos. Subscription is best for active teams who want predictable monthly pricing and volume discounts across multiple projects.",
     expanded: false,
   },
 ];
@@ -57,14 +62,16 @@ export function FAQ() {
       <div className="flex flex-col gap-4 md:gap-6 items-center leading-[normal] relative shrink-0 text-center w-full max-w-[1280px]">
         <h2
           ref={titleAnim.ref}
-          className={`font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-center text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] leading-[1.2] ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
+          className={`font-['Inter',sans-serif] font-bold not-italic relative shrink-0 text-center text-3xl sm:text-4xl text-neutral-950 tracking-[-0.96px] leading-[1.2] ${titleAnim.isVisible ? "animate-fade-in-up" : "opacity-0-animate"}`}
         >
           <span className="block">Frequently Asked</span>
-          <span className="block font-['Inter',sans-serif] font-normal italic text-green-600">Questions</span>
+          <span className="block font-['Inter',sans-serif] not-italic text-green-600">
+            Questions
+          </span>
         </h2>
         <p
           ref={descAnim.ref}
-          className={`flex-[1_0_0] font-['Open_Sans',sans-serif] font-normal min-h-px min-w-px relative shrink-0 text-[#717182] text-base md:text-lg w-full max-w-[768px] whitespace-pre-wrap ${descAnim.isVisible ? 'animate-fade-in-up animation-delay-200' : 'opacity-0-animate'}`}
+          className={`flex-[1_0_0] font-['Open_Sans',sans-serif] font-normal min-h-px min-w-px relative shrink-0 text-[#717182] text-base md:text-lg w-full max-w-[768px] whitespace-pre-wrap ${descAnim.isVisible ? "animate-fade-in-up animation-delay-200" : "opacity-0-animate"}`}
         >
           Clear answers to help you get started.
         </p>
@@ -77,23 +84,29 @@ export function FAQ() {
             return (
               <div
                 key={index}
-                className={`border-[1.333px] border-[rgba(0,0,0,0.1)] border-solid box-border flex flex-col ${isExpanded
-                  ? "items-start justify-center px-4 md:px-[25.333px] py-1"
-                  : "min-h-[48px] md:h-[54.667px] items-start px-4 md:px-[25.333px] py-[1.333px]"
-                  } relative rounded-[10px] shrink-0 w-full`}
+                className={`border-[1.333px] border-[rgba(0,0,0,0.1)] border-solid box-border flex flex-col ${
+                  isExpanded
+                    ? "items-start justify-center px-4 md:px-[25.333px] py-1"
+                    : "min-h-[48px] md:h-[54.667px] items-start px-4 md:px-[25.333px] py-[1.333px]"
+                } relative rounded-[10px] shrink-0 w-full`}
               >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isExpanded ? null : index)}
-                  className={`box-border flex items-center justify-between ${isExpanded ? "px-0 py-[13px]" : "min-h-[48px] md:h-[52px]"
-                    } relative rounded-[8px] shrink-0 w-full text-left`}
+                  className={`box-border flex items-center justify-between ${
+                    isExpanded ? "px-0 py-[13px]" : "min-h-[48px] md:h-[52px]"
+                  } relative rounded-[8px] shrink-0 w-full text-left`}
                   aria-expanded={isExpanded}
                 >
                   <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative text-base md:text-lg text-neutral-950 tracking-[-0.36px] pr-4">
                     {item.question}
                   </span>
                   <span className="relative shrink-0 size-5 text-slate-600 flex items-center justify-center">
-                    {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    {isExpanded ? (
+                      <ChevronUp size={20} />
+                    ) : (
+                      <ChevronDown size={20} />
+                    )}
                   </span>
                 </button>
                 {isExpanded && item.answer && (
@@ -120,11 +133,13 @@ export function FAQ() {
             <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-sm md:text-base text-blue-600 group-hover:text-blue-700 transition-colors">
               Contact Support
             </span>
-            <ArrowIcon className="relative shrink-0 text-blue-600 group-hover:text-blue-700 group-hover:translate-x-0.5 transition-all" size={18} />
+            <ArrowIcon
+              className="relative shrink-0 text-blue-600 group-hover:text-blue-700 group-hover:translate-x-0.5 transition-all"
+              size={18}
+            />
           </Link>
         </div>
       </div>
     </section>
   );
 }
-

@@ -5,11 +5,19 @@ import Link from "next/link";
 import ProjectCard from "@/components/dashboard/ProjectCard";
 import ProjectCardSkeleton from "@/components/dashboard/ProjectCardSkeleton";
 import ActivityItem from "@/components/dashboard/ActivityItem";
-import { ArrowRight, ChevronDown, Clock } from "lucide-react";
+import { Filter } from "lucide-react";
 import { getProjectsWithStats, deleteProject } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { useDashboard } from "./layout";
 import ConfirmModal from "@/components/common/ConfirmModal";
+import ArrowRight from "@/components/dashboard/icons/Arrow - Right";
+import ProjectsFolder from "@/components/dashboard/icons/ProjectsFolder";
+import StatusCard from "@/components/dashboard/dashboard/StatusCard";
+import ClockProcessing from "@/components/dashboard/icons/ClockProcessing";
+import Ready from "@/components/dashboard/icons/Ready";
+import CompletedCheck from "@/components/dashboard/icons/CompletedCheck";
+import DataOperation from "@/components/dashboard/dashboard/DataOperation";
+import SearchBar from "@/components/dashboard/SearchBar";
 
 // Mock data for recent activity
 const mockActivities = [
@@ -41,11 +49,15 @@ const mockActivities = [
 
 export default function DashboardPage() {
   const [greeting, setGreeting] = useState("Welcome");
-  const { searchQuery, statusFilter, setStatusFilter } = useDashboard();
+  const { searchQuery, setSearchQuery, statusFilter, setStatusFilter } =
+    useDashboard();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   // Auto-hide toast
   useEffect(() => {
@@ -81,7 +93,9 @@ export default function DashboardPage() {
           const photos = project.photos || [];
 
           // Flatten placements from all plans for "all pinned" check
-          const allPlacements = plans.flatMap((p: any) => p.photo_placements || []);
+          const allPlacements = plans.flatMap(
+            (p: any) => p.photo_placements || [],
+          );
 
           const photoCount = photos.length;
           const planCount = plans.length;
@@ -96,21 +110,33 @@ export default function DashboardPage() {
           if (photoCount > 0) {
             progress += 33;
             // Check if all photos are pinned
-            const placedPhotoIds = new Set(allPlacements.map((p: any) => p.photo_id));
-            const allPinned = photos.every((p: any) => placedPhotoIds.has(p.id));
+            const placedPhotoIds = new Set(
+              allPlacements.map((p: any) => p.photo_id),
+            );
+            const allPinned = photos.every((p: any) =>
+              placedPhotoIds.has(p.id),
+            );
             if (allPinned) progress += 34;
           }
 
           // Determine status based on progress
-          let status: 'draft' | 'processing' | 'completed' = 'draft';
-          if (progress === 100) status = 'completed';
-          else if (progress > 0) status = 'processing';
+          let status: "draft" | "processing" | "completed" = "draft";
+          if (progress === 100) status = "completed";
+          else if (progress > 0) status = "processing";
 
           // Determine thumbnail
           let thumbnail = "/images/projects/office-complex.jpg"; // Default
           // Sort explicitly just in case database order isn't perfect (though we ordered in query)
-          const sortedPlans = [...plans].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-          const sortedPhotos = [...photos].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          const sortedPlans = [...plans].sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime(),
+          );
+          const sortedPhotos = [...photos].sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime(),
+          );
 
           if (sortedPlans.length > 0) {
             thumbnail = sortedPlans[0].file_url;
@@ -143,8 +169,8 @@ export default function DashboardPage() {
 
         setProjects(projectsWithDetails);
       } catch (err: any) {
-        console.error('Error fetching projects:', err);
-        setError(err.message || 'Failed to load projects');
+        console.error("Error fetching projects:", err);
+        setError(err.message || "Failed to load projects");
       } finally {
         setLoading(false);
       }
@@ -166,25 +192,30 @@ export default function DashboardPage() {
       await deleteProject(projectToDelete);
 
       // Update local state by removing the deleted project
-      setProjects(prev => prev.filter(p => p.id !== projectToDelete));
+      setProjects((prev) => prev.filter((p) => p.id !== projectToDelete));
 
       setShowDeleteModal(false);
       setProjectToDelete(null);
-      setToast({ message: "Project deleted successfully", type: 'success' });
+      setToast({ message: "Project deleted successfully", type: "success" });
     } catch (err: any) {
-      console.error('Error deleting project:', err);
+      console.error("Error deleting project:", err);
       // We could show a toast here, but for now log it
-      setToast({ message: `Failed to delete project: ${err.message}`, type: 'error' });
+      setToast({
+        message: `Failed to delete project: ${err.message}`,
+        type: "error",
+      });
     } finally {
       setIsDeleting(false);
     }
   };
 
   // Filter projects based on search and status
-  const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch =
+      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "All Status" ||
+    const matchesStatus =
+      statusFilter === "All Status" ||
       project.status.toLowerCase() === statusFilter.toLowerCase();
     return matchesSearch && matchesStatus;
   });
@@ -196,90 +227,102 @@ export default function DashboardPage() {
     <>
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg shadow-lg text-sm font-medium transition-all ${toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
-          }`}>
+        <div
+          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg shadow-lg text-sm font-medium transition-all ${
+            toast.type === "success"
+              ? "bg-emerald-600 text-white"
+              : "bg-red-600 text-white"
+          }`}
+        >
           {toast.message}
         </div>
       )}
 
       {/* Dashboard Header & Stats */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-              {greeting}
-            </h1>
-            <p className="text-gray-500 mt-1">
-              Overview of your construction portfolio
-            </p>
-          </div>
-          <Link
-            href="/projects/new"
-            className="flex items-center justify-center gap-2 bg-gray-900 text-white font-medium py-2.5 px-5 rounded-lg hover:bg-gray-800 transition-all shadow-sm active:scale-95"
-          >
-            Create Project
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 p-6 bg-white rounded-l-2xl rounded-r-[1.75rem]">
+        <div className="w-210 bg-[#f9fafb] px-6 py-3 flex flex-col gap-2 rounded-[2.5rem]">
+          <h1 className="text-2xl md:text-[1.75rem] font-['Inter', sans-serif] font-semibold text-gray-900 tracking-tight leading-8.75">
+            {greeting}
+          </h1>
+          <p className="text-gray-500 font-['Open_Sans',sans-serif] text-lg leading-5.5">
+            Here's what's happening on your construction site today.
+          </p>
         </div>
-
-        {/* Stats Row */}
-        {!loading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <p className="text-sm font-medium text-gray-500 mb-1">Total Projects</p>
-              <p className="text-2xl font-semibold text-gray-900">{projects.length}</p>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <p className="text-sm font-medium text-gray-500 mb-1">Active</p>
-              <p className="text-2xl font-semibold text-blue-600">
-                {projects.filter(p => p.status !== 'completed').length}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <p className="text-sm font-medium text-gray-500 mb-1">Completed</p>
-              <p className="text-2xl font-semibold text-emerald-600">
-                {projects.filter(p => p.status === 'completed').length}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <p className="text-sm font-medium text-gray-500 mb-1">Total Files</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {projects.reduce((acc, p) => acc + (p.fileCount || 0), 0)}
-              </p>
-            </div>
-          </div>
-        )}
+        <Link
+          href="/projects/new"
+          className="flex items-center justify-center gap-4 text-white font-medium py-2.5 px-5 rounded-full hover:bg-gray-800 transition-all shadow-sm active:scale-95 leading-5.75 text-lg h-16 w-68.5 bg-blue-600"
+        >
+          Create New Project
+          <ArrowRight className="h-4 w-4.75" />
+        </Link>
       </div>
 
+      {/* Stats Row */}
+      {!loading && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <StatusCard name="Projects" data={projects} clasName="rounded-l-2xl">
+            <ProjectsFolder className="text-[#231d1d]" />
+          </StatusCard>
+          <StatusCard
+            name="Processing"
+            data={projects.filter((p) => p.status !== "completed")}
+          >
+            <ClockProcessing className="text-[#2563EB]" />
+          </StatusCard>
+          <StatusCard
+            name="Ready for Review"
+            data={projects.filter((p) => p.status === "for review")}
+          >
+            <Ready className="text-[#FFBB00]" />
+          </StatusCard>
+          <StatusCard
+            name="Completed"
+            data={projects.filter((p) => p.status === "completed")}
+          >
+            <CompletedCheck className="text-[#16A34A]" />
+          </StatusCard>
+        </div>
+      )}
+
+      {/* Main Content: Filters & Search */}
+      <div className="flex items-center justify-between mb-6 bg-white p-6 rounded-r-2xl rounded-l-[1.75rem]">
+        <div className="flex items-center gap-3 text-[#0a0a0a]">
+          {/* Status Filter */}
+          <DataOperation
+            value={statusFilter}
+            options={["All Status", "Processing", "Draft", "Completed"]}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          />
+
+          {/* Time Filter */}
+          <DataOperation
+            value={""}
+            options={["All Time"]}
+            // onChange={(e) => setTime(e.target.value)}
+          />
+
+          {/* Sort */}
+          <button
+            onClick={() => ""}
+            className="flex items-center gap-x-3 px-2.5 py-3 bg-white rounded-[1.25rem] font-['arial'] text-[0.75rem] border border-gray-300"
+          >
+            <Filter size={14} />
+            Sort
+          </button>
+        </div>
+
+        {/* Search porojects, pins, uploads... */}
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          placeholder="Search projects, pins, uploads..."
+          className="py-4 [&+svg]:left-3 pl-9"
+        />
+      </div>
+
+      {/* Main Content: Projects */}
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Main Content: Projects */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              Projects
-              {filteredProjects.length > 0 && (
-                <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                  {filteredProjects.length}
-                </span>
-              )}
-            </h2>
-
-            {/* Status Filter */}
-            <div className="relative">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="appearance-none bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent cursor-pointer"
-              >
-                <option>All Status</option>
-                <option>Processing</option>
-                <option>Draft</option>
-                <option>Completed</option>
-              </select>
-              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
-
           {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -290,9 +333,11 @@ export default function DashboardPage() {
           {/* Loading State */}
           {loading && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Array(4).fill(0).map((_, i) => (
-                <ProjectCardSkeleton key={i} />
-              ))}
+              {Array(4)
+                .fill(0)
+                .map((_, i) => (
+                  <ProjectCardSkeleton key={i} />
+                ))}
             </div>
           )}
 
@@ -300,7 +345,7 @@ export default function DashboardPage() {
           {!loading && (
             <>
               {filteredProjects.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-[1.75rem] p-6">
                   {filteredProjects.map((project) => (
                     <ProjectCard
                       key={project.id}
@@ -312,11 +357,23 @@ export default function DashboardPage() {
               ) : (
                 <div className="text-center py-16 bg-white rounded-xl border border-gray-200 border-dashed">
                   <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    <svg
+                      className="w-8 h-8 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No projects found</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No projects found
+                  </h3>
                   <p className="text-gray-500 max-w-sm mx-auto mb-6">
                     {searchQuery
                       ? `We couldn't find any projects matching "${searchQuery}"`
@@ -338,27 +395,26 @@ export default function DashboardPage() {
 
         {/* Sidebar: Recent Activity */}
         <div className="w-full lg:w-80 flex-shrink-0">
-          <div className="sticky top-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-gray-500" />
-              Recent Activity
-            </h2>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100 overflow-hidden">
-              {mockActivities.map((activity) => (
-                <ActivityItem key={activity.id} activity={activity} />
-              ))}
-              <div className="p-3 text-center">
-                <button className="text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors">
-                  View All Activity
-                </button>
+          <div className="sticky bg-white p-6 rounded-[1.75rem]">
+            <div className="bg-[#f9fafb] p-3 rounded-xl">
+              <h2 className="text-2xl font-outfit font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                Recent Activity
+              </h2>
+              <div className="flex flex-col gap-3">
+                {mockActivities.map((activity) => (
+                  <ActivityItem key={activity.id} activity={activity} />
+                ))}
               </div>
             </div>
 
             {/* Quick Tips or Info Card could go here */}
             <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-100">
-              <h3 className="text-sm font-semibold text-blue-900 mb-2">Pro Tip</h3>
+              <h3 className="text-sm font-semibold text-blue-900 mb-2">
+                Pro Tip
+              </h3>
               <p className="text-sm text-blue-800 leading-relaxed">
-                Pinning all your photos to the floor plan increases your project completion score!
+                Pinning all your photos to the floor plan increases your project
+                completion score!
               </p>
             </div>
           </div>

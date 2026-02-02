@@ -95,7 +95,7 @@ export function Testimonials() {
           <h2 className="font-['Inter',sans-serif] font-bold leading-[1.2] not-italic relative shrink-0 text-center text-neutral-950 tracking-[-0.96px]">
             <span className="block text-3xl sm:text-4xl">Trusted by</span>
             <span className="block text-3xl sm:text-4xl">
-              <span className="font-['Inter',sans-serif] font-normal italic text-green-600 tracking-[-0.96px]">
+              <span className="font-['Inter',sans-serif] not-italic text-green-600 tracking-[-0.96px]">
                 Industry
               </span>
               <span> Leaders</span>
@@ -105,7 +105,7 @@ export function Testimonials() {
         <div className="flex items-start relative shrink-0 w-full">
           <div className="flex-[1_0_0] font-['Arial',sans-serif] leading-[28px] min-h-px min-w-px not-italic relative shrink-0 text-[#717182] text-base md:text-lg lg:text-xl text-center whitespace-pre-wrap">
             <p className="mb-0">Join thousands of construction </p>
-            <p>professionals who rely on SiteBuilt</p>
+            <p>professionals who rely on SiteSync</p>
           </div>
         </div>
       </div>

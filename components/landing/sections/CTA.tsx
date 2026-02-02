@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { ShieldCheck, Headphones, Activity } from "lucide-react";
@@ -11,33 +11,42 @@ export function CTA() {
   const buttonsAnim = useScrollAnimation({ threshold: 0.2 });
 
   return (
-    <section className="bg-white box-border flex flex-col items-center justify-center px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] relative w-full">
+    <section
+      id="cta"
+      className="bg-white box-border flex flex-col items-center justify-center px-4 sm:px-8 md:px-12 lg:px-[120px] py-12 sm:py-16 md:py-20 lg:py-[112px] relative w-full"
+    >
       <div className="flex flex-col gap-6 md:gap-8 items-center justify-center relative shrink-0 w-full max-w-[1280px]">
         <div
           ref={titleAnim.ref}
-          className={`box-border flex gap-[10px] items-center justify-center px-4 sm:px-0 py-0 relative shrink-0 w-full ${titleAnim.isVisible ? 'animate-fade-in-up' : 'opacity-0-animate'}`}
+          className={`box-border flex gap-[10px] items-center justify-center px-4 sm:px-0 py-0 relative shrink-0 w-full ${titleAnim.isVisible ? "animate-fade-in-up" : "opacity-0-animate"}`}
         >
           <div className="font-['Inter',sans-serif] font-bold leading-[0] not-italic relative shrink-0 text-[0px] text-[color:var(--black,#000000)] text-center tracking-[-0.96px]">
-            <p className="leading-[normal] mb-0 text-3xl sm:text-4xl lg:text-5xl">Stop wasting time </p>
+            <p className="leading-[normal] mb-0 text-3xl sm:text-4xl lg:text-5xl">
+              Stop wasting time{" "}
+            </p>
             <p className="leading-[normal] text-3xl sm:text-4xl lg:text-5xl">
               <span>on </span>
-              <span className="font-['Inter',sans-serif] font-normal italic text-green-600 tracking-[-0.96px]">manual</span>
+              <span className="font-['Inter',sans-serif] not-italic text-green-600 tracking-[-0.96px]">
+                manual
+              </span>
               <span> As-Builts.</span>
             </p>
           </div>
         </div>
         <div
           ref={descAnim.ref}
-          className={`flex gap-[10px] items-center justify-center opacity-90 relative shrink-0 w-full ${descAnim.isVisible ? 'animate-fade-in-up animation-delay-200' : 'opacity-0-animate'}`}
+          className={`flex gap-[10px] items-center justify-center opacity-90 relative shrink-0 w-full ${descAnim.isVisible ? "animate-fade-in-up animation-delay-200" : "opacity-0-animate"}`}
         >
           <div className="font-['Open_Sans',sans-serif] font-normal leading-[normal] relative shrink-0 text-base md:text-lg text-center text-slate-600 w-full max-w-[726px] whitespace-pre-wrap">
-            <p className="mb-0">Join thousands of construction professionals who trust </p>
+            <p className="mb-0">
+              Join thousands of construction professionals who trust{" "}
+            </p>
             <p>SiteBuilt to streamline their projects</p>
           </div>
         </div>
         <div
           ref={buttonsAnim.ref}
-          className={`box-border flex flex-col sm:flex-row gap-3 md:gap-4 items-stretch justify-center pl-0 pr-[0.021px] py-0 relative shrink-0 w-full sm:w-auto ${buttonsAnim.isVisible ? 'animate-fade-in-up animation-delay-400' : 'opacity-0-animate'}`}
+          className={`box-border flex flex-col sm:flex-row gap-3 md:gap-4 items-stretch justify-center pl-0 pr-[0.021px] py-0 relative shrink-0 w-full sm:w-auto ${buttonsAnim.isVisible ? "animate-fade-in-up animation-delay-400" : "opacity-0-animate"}`}
         >
           <Link
             href="/signup"
@@ -47,7 +56,10 @@ export function CTA() {
               <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-sm md:text-base text-white">
                 Start free trial
               </span>
-              <ArrowIcon className="relative shrink-0 text-white group-hover:translate-x-0.5 transition-all" size={18} />
+              <ArrowIcon
+                className="relative shrink-0 text-white group-hover:translate-x-0.5 transition-all"
+                size={18}
+              />
             </div>
           </Link>
           <Link
@@ -58,7 +70,10 @@ export function CTA() {
               <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-sm md:text-base text-blue-600 group-hover:text-blue-700 transition-colors">
                 Contact Sales
               </span>
-              <ArrowIcon className="relative shrink-0 text-blue-600 group-hover:text-blue-700 group-hover:translate-x-0.5 transition-all" size={18} />
+              <ArrowIcon
+                className="relative shrink-0 text-blue-600 group-hover:text-blue-700 group-hover:translate-x-0.5 transition-all"
+                size={18}
+              />
             </div>
           </Link>
         </div>
@@ -92,4 +107,3 @@ export function CTA() {
     </section>
   );
 }
-
