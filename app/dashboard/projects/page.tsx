@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import ProjectCard from "@/components/dashboard/ProjectCard";
 import ProjectCardSkeleton from "@/components/dashboard/ProjectCardSkeleton";
-import ActivityItem from "@/components/dashboard/activity/ActivityItem";
+import ActivityItem from "@/components/dashboard/ActivityItem";
 import { Filter } from "lucide-react";
 import { getProjectsWithStats, deleteProject } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
@@ -24,35 +24,31 @@ import useStatus from "@/hooks/useStatus";
 const mockActivities = [
   {
     id: "1",
-    alert: "success" as const,
-    status: "approved" as const,
+    type: "success" as const,
     message: "Foundation photos uploaded",
     timestamp: "2 hours ago",
   },
   {
     id: "2",
-    alert: "warning" as const,
-    status: "pending review" as const,
+    type: "warning" as const,
     message: "Progress report pending review",
     timestamp: "3 hours ago",
   },
   {
     id: "3",
-    alert: "info" as const,
-    status: "new assignment" as const,
+    type: "info" as const,
     message: "New project assigned: Harbor Development",
     timestamp: "1 day ago",
   },
   {
     id: "4",
-    alert: "error" as const,
-    status: "upload error" as const,
+    type: "error" as const,
     message: "Site survey failed to upload",
     timestamp: "2 days ago",
   },
 ];
 
-export default function DashboardPage() {
+export default function ProjectsPage() {
   const [greeting, setGreeting] = useState("Welcome");
   const { searchQuery, setSearchQuery } = useSearch();
   const { statusFilter, setStatusFilter } = useStatus();
@@ -247,10 +243,10 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 p-6 bg-white rounded-l-2xl rounded-r-[1.75rem]">
         <div className="w-210 bg-[#f9fafb] px-6 py-3 flex flex-col gap-2 rounded-[2.5rem]">
           <h1 className="text-2xl md:text-[1.75rem] font-['Inter', sans-serif] font-semibold text-gray-900 tracking-tight leading-8.75">
-            {greeting}
+            Projects
           </h1>
           <p className="text-gray-500 font-['Open_Sans',sans-serif] text-lg leading-5.5">
-            Here's what's happening on your construction site today.
+            Stay focused on what matters — your active sites.
           </p>
         </div>
         <Link
@@ -263,7 +259,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Row */}
-      {!loading && (
+      {/* {!loading && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatusCard name="Projects" data={projects} clasName="rounded-l-2xl">
             <ProjectsFolder className="text-[#231d1d]" />
@@ -287,7 +283,7 @@ export default function DashboardPage() {
             <CompletedCheck className="text-[#16A34A]" />
           </StatusCard>
         </div>
-      )}
+      )} */}
 
       {/* Main Content: Filters & Search */}
       <div className="flex items-center justify-between mb-6 bg-white p-6 rounded-r-2xl rounded-l-[1.75rem]">
@@ -303,8 +299,7 @@ export default function DashboardPage() {
           <DataOperation
             value={""}
             options={["All Time"]}
-            onChange={() => {}}
-            // onChange={(e) => setTime(e.target.value)}
+            onChange={(e) => setTime(e.target.value)}
           />
 
           {/* Sort */}
@@ -400,7 +395,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Sidebar: Recent Activity */}
-        <div className="w-full lg:w-80 shrink-0">
+        {/* <div className="w-full lg:w-80 flex-shrink-0">
           <div className="sticky bg-white p-6 rounded-[1.75rem] top-0">
             <div className="bg-[#f9fafb] p-3 rounded-xl">
               <h2 className="text-2xl font-outfit font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -408,19 +403,13 @@ export default function DashboardPage() {
               </h2>
               <div className="flex flex-col gap-3">
                 {mockActivities.map((activity) => (
-                  <ActivityItem
-                    key={activity.id}
-                    activity={activity}
-                    section={
-                      activity.alert === "success" ? undefined : "projects"
-                    }
-                  />
+                  <ActivityItem key={activity.id} activity={activity} />
                 ))}
               </div>
-            </div>
+            </div> */}
 
-            {/* Quick Tips or Info Card could go here */}
-            <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-100">
+        {/* Quick Tips or Info Card could go here */}
+        {/* <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-100">
               <h3 className="text-sm font-semibold text-blue-900 mb-2">
                 Pro Tip
               </h3>
@@ -430,7 +419,7 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Confirm Delete Modal */}

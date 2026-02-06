@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   Arimo,
   Inter,
+  JetBrains_Mono,
   Outfit,
   Plus_Jakarta_Sans,
   Roboto,
@@ -16,6 +17,10 @@ const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
 });
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-roboto" });
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+});
 
 export const metadata: Metadata = {
   title: "SiteBuilt - Construction Documentation Made Simple",
@@ -33,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} ${outfit.variable} ${arimo.variable} ${jakarta.variable} ${roboto.variable} antialiased`}
+        className={`${inter.className} ${outfit.variable} ${arimo.variable} ${jakarta.variable} ${roboto.variable} ${jetbrainsMono.variable} antialiased`}
         suppressHydrationWarning
       >
         <PHProvider>{children}</PHProvider>

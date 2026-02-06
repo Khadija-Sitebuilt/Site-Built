@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { Settings, LogOut } from "lucide-react";
+import { Menu, Settings } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Home from "./icons/Home";
@@ -14,12 +14,15 @@ import Messages from "./icons/Messages";
 import Report from "./icons/Report";
 import HelpAndSupport from "./icons/HelpAndSupport";
 import CommunityCard from "./CommunityCard";
+import { useState } from "react";
+import SitebuiltLogo from "./icons/SitebuiltLogo";
+import clsx from "clsx";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Projects", href: "/projects", icon: Folder },
-  { name: "Activity", href: "/activity", icon: Activity },
-  { name: "Messages", href: "/messages", icon: Messages },
+  { name: "Projects", href: "/dashboard/projects", icon: Folder },
+  { name: "Activity", href: "/dashboard/activity", icon: Activity },
+  { name: "Messages", href: "/dashboard/messages", icon: Messages },
   { name: "Reports", href: "/reports", icon: Report },
 ];
 
@@ -30,29 +33,53 @@ const bottomNavItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const [enableSidebar, setEnableSidebar] = useState(true);
 
   return (
-    <aside className="h-full w-78.25 gap-y-4 p-8 flex flex-col">
-      {/* Logo */}
-      <div className="flex py-5.5 relative items-center bg-white rounded-t-2xl">
+    <aside
+      className={`flex flex-col h-full ${enableSidebar ? "p-8 w-78.25 gap-y-4" : "px-0 pt-0 pb-8"}`}
+    >
+      <div
+        className={clsx(
+          "flex flex-col relative items-center bg-white rounded-t-2xl pt-4",
+          enableSidebar && "pb-5.5",
+        )}
+      >
+        {/* Menu when sidebar is collapsed */}
+        {!enableSidebar && (
+          <Menu
+            className="size-10 text-gray-400 bg-[#f6f6f8] rounded-full p-2 hover:bg-white cursor-pointer"
+            onClick={() => setEnableSidebar(true)}
+          />
+        )}
+
+        {/* Logo */}
         <Link
           href="/dashboard"
-          className="flex items-center w-full h-15 bg-[#f9fafb] pl-3"
+          className={`relative flex items-center w-full h-15 bg-[#f9fafb] ${enableSidebar ? "pl-3" : "pl-0"}`}
         >
-          <Image
-            src="/images/landing/Logo.png"
-            alt="SiteBuilt"
-            width={120}
-            height={40}
-            className="h-auto"
-          />
+          {enableSidebar ? (
+            <>
+              <Image
+                src="/images/landing/Logo.png"
+                alt="SiteBuilt"
+                width={120}
+                height={40}
+                className="h-auto"
+              />
+              <ChevronLeft
+                className="bg-linear-[191deg,#0088ff,#6155f5_100%] rounded-l-[0.625rem] text-white absolute right-0"
+                height={36}
+                width={26}
+                onClick={() => setEnableSidebar(false)}
+              />
+            </>
+          ) : (
+            <div className="size-10 bg-white rounded-full flex items-center justify-center mx-auto">
+              <SitebuiltLogo className="w-6 h-[1.735rem]" />
+            </div>
+          )}
         </Link>
-        <ChevronLeft
-          className="bg-blue-600 rounded-l-[0.625rem] text-white relative right-0"
-          height={36}
-          width={26}
-        />
       </div>
 
       <div className="h-full flex flex-col px-4 pt-6 pb-5 bg-white rounded-b-2xl">
@@ -67,7 +94,7 @@ export default function Sidebar() {
                 href={item.href}
                 className={`flex items-center gap-3 p-1.5 rounded-full text-sm transition-all duration-200 group ${
                   isActive
-                    ? "bg-blue-600 text-white font-semibold shadow-sm"
+                    ? "bg-linear-[191deg,#0088ff,#6155f5_100%] text-white font-semibold shadow-sm"
                     : "text-gray-500 font-medium hover:bg-gray-50 hover:text-gray-900 hover:[&_div]:bg-white"
                 }`}
               >
@@ -75,19 +102,23 @@ export default function Sidebar() {
                   className={`w-10 h-10 flex ${isActive && "bg-white"} bg-[#f6f6f8] rounded-full items-center justify-center`}
                 >
                   <Icon
-                    className={`${item.name === "Reports" ? "w-6 h-6 p-1" : "w-6 h-6"} transition-colors ${isActive ? "fill-blue-600 text-white" : "text-gray-400 group-hover:text-gray-600"}`}
+                    className={`${item.name === "Reports" && "w-6 h-6 p-1"} size-6 transition-colors ${isActive ? "fill-blue-600 text-white" : "text-gray-400 group-hover:text-gray-600"}`}
                   />
                 </div>
-                <span className="tracking-tight">{item.name}</span>
+                {enableSidebar && (
+                  <span className="tracking-tight">{item.name}</span>
+                )}
               </Link>
             );
           })}
         </nav>
 
         {/* Community Card */}
-        <div className="flex flex-1 items-center">
-          <CommunityCard />
-        </div>
+        {enableSidebar && (
+          <div className="flex flex-1 items-center">
+            <CommunityCard />
+          </div>
+        )}
 
         {/* Bottom Navigation */}
         <div className="space-y-4 mt-auto">
@@ -99,9 +130,10 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={() => setEnableSidebar(true)}
                 className={`flex items-center gap-3 p-1.5 rounded-full text-sm transition-all duration-200 group ${
                   isActive
-                    ? "bg-blue-50 text-blue-600 font-semibold shadow-sm"
+                    ? "bg-blue-50 bg-linear-[191deg,#0088ff,#6155f5_100%] font-semibold shadow-sm"
                     : "text-gray-500 font-medium hover:bg-gray-50 hover:text-gray-900 hover:[&_div]:bg-white"
                 }`}
               >
@@ -109,10 +141,12 @@ export default function Sidebar() {
                   className={`w-10 h-10 flex ${isActive && "bg-white"} bg-[#f6f6f8] rounded-full items-center justify-center`}
                 >
                   <Icon
-                    className={`w-5 h-5 transition-colors ${isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"}`}
+                    className={`w-5 h-5 transition-colors ${isActive ? "bg-linear-[191deg,#0088ff,#6155f5_100%]" : "text-gray-400 group-hover:text-gray-600"}`}
                   />
                 </div>
-                <span className="tracking-tight">{item.name}</span>
+                {enableSidebar && (
+                  <span className="tracking-tight">{item.name}</span>
+                )}
               </Link>
             );
           })}

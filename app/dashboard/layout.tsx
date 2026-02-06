@@ -1,28 +1,10 @@
 "use client";
 
-import { useState, createContext, useContext } from "react";
+import { useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-
-// Create context for dashboard-wide state
-interface DashboardContextType {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  statusFilter: string;
-  setStatusFilter: (status: string) => void;
-}
-
-const DashboardContext = createContext<DashboardContextType | undefined>(
-  undefined,
-);
-
-export function useDashboard() {
-  const context = useContext(DashboardContext);
-  if (!context) {
-    throw new Error("useDashboard must be used within DashboardLayout");
-  }
-  return context;
-}
+import { SearchContext } from "@/hooks/useSerarch";
+import StatusProvider from "./status-provider";
 
 export default function DashboardLayout({
   children,
@@ -31,11 +13,11 @@ export default function DashboardLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All Status");
+  // const [statusFilter, setStatusFilter] = useState("All Status");
 
   return (
-    <DashboardContext.Provider
-      value={{ searchQuery, setSearchQuery, statusFilter, setStatusFilter }}
+    <SearchContext
+      value={{ searchQuery, setSearchQuery }} //, statusFilter, setStatusFilter }}
     >
       <div className="flex h-screen bg-[#f9fafb] overflow-hidden">
         {/* Sidebar - Mobile Overlay */}
@@ -63,11 +45,11 @@ export default function DashboardLayout({
             onSearchChange={setSearchQuery}
           />
 
-          <main className="flex-1 overflow-y-auto p-8 bg-linear-[182deg,#f9fafb,#dde7fc40_15%,#f9fafb_60%]">
-            {children}
+          <main className="flex-1 overflow-y-auto pb-8 px-8 bg-linear-[182deg,#f9fafb,#dde7fc40_15%,#f9fafb_60%]">
+            <StatusProvider>{children}</StatusProvider>
           </main>
         </div>
       </div>
-    </DashboardContext.Provider>
+    </SearchContext>
   );
 }

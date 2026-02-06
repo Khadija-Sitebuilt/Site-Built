@@ -44,7 +44,7 @@ function CommunityCard() {
           Engineers using Sitebuilt
         </p>
       </div>
-      <button className="bg-blue-600 px-5 py-2 w-fit font-sans rounded-full text-white text-[0.875rem]">
+      <button className="bg-linear-[191deg,#0088ff,#6155f5_100%] px-5 py-2 w-fit font-sans rounded-full text-white text-[0.875rem]">
         Join now
       </button>
     </div>
