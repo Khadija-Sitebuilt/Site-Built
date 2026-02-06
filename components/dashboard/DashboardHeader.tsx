@@ -32,18 +32,6 @@ export default function DashboardHeader({
             onSearchChange={onSearchChange}
             placeholder="Search projects, pins, uploads..."
           />
-          {/* <div className="flex-1 max-w-lg hidden md:block">
-            <div className="relative">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search projects by name or location..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange?.(e.target.value)}
-                className="w-full pl-14 pr-4 py-6 rounded-[1.75rem] bg-gray-50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent leading-4.75"
-              />
-            </div>
-          </div> */}
         </div>
 
         {/* Right Section */}

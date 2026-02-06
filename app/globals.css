@@ -21,6 +21,7 @@ html {
   --font-arimo: var(--font-arimo);
   --font-jakarta: var(--font-jakarta);
   --font-roboto: var(--font-roboto);
+  --font-jetbrains-mono: var(--font-jetbrains-mono);
 }
 
 body {
