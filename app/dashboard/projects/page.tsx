@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import ProjectCard from "@/components/dashboard/ProjectCard";
 import ProjectCardSkeleton from "@/components/dashboard/ProjectCardSkeleton";
-import ActivityItem from "@/components/dashboard/ActivityItem";
+import ActivityItem from "@/components/dashboard/activity/ActivityItem";
 import { Filter } from "lucide-react";
 import { getProjectsWithStats, deleteProject } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
@@ -299,7 +299,7 @@ export default function ProjectsPage() {
           <DataOperation
             value={""}
             options={["All Time"]}
-            onChange={(e) => setTime(e.target.value)}
+            onChange={(e) => e.target.value}
           />
 
           {/* Sort */}

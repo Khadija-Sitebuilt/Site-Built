@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import MessageCard from "@/components/dashboard/messages/MessageCard";
-import Message from "@/components/dashboard/messages/Message";
+import Message, { MessageProps } from "@/components/dashboard/messages/Message";
 
 // Mock data for recent activity
 const mockMessages = [
@@ -47,7 +47,7 @@ const mockMessages = [
 ];
 
 export default function MessagesPage() {
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState<MessageProps | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [toast, setToast] = useState<{
@@ -119,11 +119,11 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        <Message />
+        <Message message={message} />
       </div>
 
       {/* Confirm Delete Modal */}
-      <ConfirmModal
+      {/* <ConfirmModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         // onConfirm={confirmDelete}
@@ -132,7 +132,7 @@ export default function MessagesPage() {
         confirmText="Delete Project"
         confirmStyle="danger"
         isLoading={isDeleting}
-      />
+      /> */}
     </>
   );
 }

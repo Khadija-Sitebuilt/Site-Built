@@ -1,17 +1,14 @@
 import NoMessage from "./icon/NoMessage";
 
-export default function Message({
-  message,
-}: {
-  message: {
-    id: string;
-    from: string;
-    markedAsRead: boolean;
-    subject: string;
-    message: string;
-    timestamp: string;
-  };
-}) {
+export interface MessageProps {
+  from: string;
+  markedAsRead: boolean;
+  subject: string;
+  message: string;
+  timestamp: string;
+}
+
+export default function Message({ message }: { message: MessageProps | null }) {
   return (
     <div className="flex flex-col gap-y-4 items-center justify-center bg-white w-full border-2 border-black/10 rounded-[0.875rem]">
       {message ? (

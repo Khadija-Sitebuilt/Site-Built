@@ -165,7 +165,7 @@ export default function ActivityPage() {
       </div>
 
       {/* Confirm Delete Modal */}
-      <ConfirmModal
+      {/* <ConfirmModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         // onConfirm={confirmDelete}
@@ -174,7 +174,7 @@ export default function ActivityPage() {
         confirmText="Delete Project"
         confirmStyle="danger"
         isLoading={isDeleting}
-      />
+      /> */}
     </>
   );
 }
