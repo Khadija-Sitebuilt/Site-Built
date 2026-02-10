@@ -133,6 +133,7 @@ export function Pricing() {
               onClick={() => setIsAnnual(false)}
               className="cursor-pointer flex-[1_0_0] min-h-px w-35.25 h-14 min-w-px left-1 relative rounded-full overflow-clip shrink-0 transition-all duration-200"
             >
+              {/* Element used for animation */}
               <span
                 className="absolute inset-0 rounded-full bg-blue-600"
                 style={
@@ -160,6 +161,7 @@ export function Pricing() {
               onClick={() => setIsAnnual(true)}
               className="cursor-pointer flex-[1_0_0] min-h-px w-35.25 h-14 min-w-px right-1 relative rounded-full overflow-clip shrink-0 transition-all duration-200"
             >
+              {/* Element used for animation */}
               <span
                 className="absolute inset-0 rounded-full bg-green-600"
                 style={

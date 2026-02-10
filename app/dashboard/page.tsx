@@ -265,24 +265,28 @@ export default function DashboardPage() {
       {/* Stats Row */}
       {!loading && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <StatusCard name="Projects" data={projects} clasName="rounded-l-2xl">
+          <StatusCard
+            name="Projects"
+            data={projects.length}
+            className="rounded-l-2xl"
+          >
             <ProjectsFolder className="text-[#231d1d]" />
           </StatusCard>
           <StatusCard
             name="Processing"
-            data={projects.filter((p) => p.status !== "completed")}
+            data={projects.filter((p) => p.status !== "completed").length}
           >
             <ClockProcessing className="text-[#2563EB]" />
           </StatusCard>
           <StatusCard
             name="Ready for Review"
-            data={projects.filter((p) => p.status === "for review")}
+            data={projects.filter((p) => p.status === "for review").length}
           >
             <Ready className="text-[#FFBB00]" />
           </StatusCard>
           <StatusCard
             name="Completed"
-            data={projects.filter((p) => p.status === "completed")}
+            data={projects.filter((p) => p.status === "completed").length}
           >
             <CompletedCheck className="text-[#16A34A]" />
           </StatusCard>

@@ -112,20 +112,20 @@ export default function ActivityPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <StatusCard
           name="Approved Today"
-          data={projects}
-          clasName="rounded-l-2xl"
+          data={projects.length}
+          className="rounded-l-2xl"
         >
           <CompletedCheck className="text-[#16A34A]" />
         </StatusCard>
         <StatusCard
           name="Pending Review"
-          data={projects.filter((p) => p.status !== "completed")}
+          data={projects.filter((p) => p.status !== "completed").length}
         >
           <ClockProcessing className="text-[#2563EB]" />
         </StatusCard>
         <StatusCard
           name="Ready for Review"
-          data={projects.filter((p) => p.status === "for review")}
+          data={projects.filter((p) => p.status === "for review").length}
         >
           <CircleX className="text-red-600" />
         </StatusCard>
@@ -165,7 +165,7 @@ export default function ActivityPage() {
       </div>
 
       {/* Confirm Delete Modal */}
-      <ConfirmModal
+      {/* <ConfirmModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         // onConfirm={confirmDelete}
@@ -174,7 +174,7 @@ export default function ActivityPage() {
         confirmText="Delete Project"
         confirmStyle="danger"
         isLoading={isDeleting}
-      />
+      /> */}
     </>
   );
 }
