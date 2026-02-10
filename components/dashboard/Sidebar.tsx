@@ -23,7 +23,7 @@ const navItems = [
   { name: "Projects", href: "/dashboard/projects", icon: Folder },
   { name: "Activity", href: "/dashboard/activity", icon: Activity },
   { name: "Messages", href: "/dashboard/messages", icon: Messages },
-  { name: "Reports", href: "/reports", icon: Report },
+  { name: "Reports", href: "/dashboard/reports", icon: Report },
 ];
 
 const bottomNavItems = [
@@ -102,7 +102,7 @@ export default function Sidebar() {
                   className={`w-10 h-10 flex ${isActive && "bg-white"} bg-[#f6f6f8] rounded-full items-center justify-center`}
                 >
                   <Icon
-                    className={`${item.name === "Reports" && "w-6 h-6 p-1"} size-6 transition-colors ${isActive ? "fill-blue-600 text-white" : "text-gray-400 group-hover:text-gray-600"}`}
+                    className={`${item.name === "Reports" && "p-1"} size-6 transition-colors ${isActive ? "fill-blue-600 text-white" : item.name === "Reports" ? "fill-gray-400 group-hover:fill-gray-600" : "text-gray-400 group-hover:text-gray-600"}`}
                   />
                 </div>
                 {enableSidebar && (
