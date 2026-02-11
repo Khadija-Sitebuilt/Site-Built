@@ -27,7 +27,7 @@ const navItems = [
 ];
 
 const bottomNavItems = [
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
   { name: "Help & Support", href: "/support", icon: HelpAndSupport },
 ];
 
@@ -141,11 +141,15 @@ export default function Sidebar() {
                   className={`w-10 h-10 flex ${isActive && "bg-white"} bg-[#f6f6f8] rounded-full items-center justify-center`}
                 >
                   <Icon
-                    className={`w-5 h-5 transition-colors ${isActive ? "bg-linear-[191deg,#0088ff,#6155f5_100%]" : "text-gray-400 group-hover:text-gray-600"}`}
+                    className={`w-5 h-5 transition-colors ${isActive ? "text-[#0088ff]" : "text-gray-400 group-hover:text-gray-600"}`}
                   />
                 </div>
                 {enableSidebar && (
-                  <span className="tracking-tight">{item.name}</span>
+                  <span
+                    className={clsx("tracking-tight", isActive && "text-white")}
+                  >
+                    {item.name}
+                  </span>
                 )}
               </Link>
             );
