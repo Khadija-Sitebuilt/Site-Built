@@ -1,18 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  ChartColumn,
-  ChevronDown,
-  Clock,
-  FileText,
-  ImageIcon,
-  Target,
-} from "lucide-react";
+import { ChartColumn, ChevronDown } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import ConfirmModal from "@/components/common/ConfirmModal";
-import StatusCard from "@/components/dashboard/dashboard/StatusCard";
-import ReportCard from "@/components/dashboard/reports/ReportCard";
+import ProjectReports from "./project-reports/content";
+import AnalyticsDashboard from "./analytics-dashboard/content";
 
 export interface Report {
   id?: string | number;
@@ -195,7 +188,8 @@ export default function ActivityPage() {
           </div>
         </div>
 
-        <div className="flex gap-4 w-full">
+        {showProjectReports ? <ProjectReports /> : <AnalyticsDashboard />}
+        {/* <div className="flex gap-4 w-full">
           <StatusCard
             data={mockReports.length}
             subData="3 ready for download"
@@ -259,7 +253,7 @@ export default function ActivityPage() {
               />
             ),
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Confirm Delete Modal */}

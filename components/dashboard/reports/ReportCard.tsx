@@ -18,7 +18,7 @@ export default function ReportCard({
   photosNumber,
 }: Report) {
   return (
-    <div className="border border-black/10 rounded-[1.75rem] px-7.75 py-8 shadow-lg">
+    <div className="border border-black/10 rounded-[1.75rem] px-6 py-7 shadow-lg">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-medium">{projectName}</h2>
