@@ -92,7 +92,7 @@ export default function ActivityPage() {
 
       {/* Main Content: Settings */}
       <div className="flex w-full gap-6">
-        <div className="flex flex-col gap-6 w-[calc(50%-0.75rem)]">
+        <div className="flex flex-col gap-6 flex-1">
           {/* Personal Information */}
           <SettingsCard
             icon={<CircleUserRoundIcon size={22} />}
@@ -112,7 +112,7 @@ export default function ActivityPage() {
           </SettingsCard>
         </div>
 
-        <div className="flex flex-col gap-6 w-[calc(50%-0.75rem)]">
+        <div className="flex flex-col gap-6 flex-1">
           {/* Notification Preferences */}
           <SettingsCard
             icon={<Bell size={22} />}
