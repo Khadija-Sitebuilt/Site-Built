@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { FileText, Download, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
-import { generateProjectReport } from "@/lib/export-utils";
+import { createReport } from "@/lib/api";
 
 export default function ExportTab() {
     const params = useParams();
@@ -20,27 +20,22 @@ export default function ExportTab() {
         setExportUrl(null);
 
         try {
-            // Generate beautiful HTML from shared utility
-            const result = await generateProjectReport(projectId);
+            // Ask backend to generate and store report in DB
+            const report = await createReport(projectId);
 
-            if (!result.success) {
-                setError(result.error || "Export failed");
-                return;
-            }
-
-            // Create blob and open
-            const blob = new Blob([result.html], { type: 'text/html' });
+            // Fetch the HTML ourselves and open via Blob so it always renders,
+            // regardless of how Supabase serves the file.
+            const res = await fetch(report.file_url);
+            const html = await res.text();
+            const blob = new Blob([html], { type: "text/html" });
             const blobUrl = URL.createObjectURL(blob);
 
-            window.open(blobUrl, '_blank');
-
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-
+            window.open(blobUrl, "_blank");
             setExportUrl(blobUrl);
 
             trackEvent(ANALYTICS_EVENTS.EXPORT_GENERATED, {
                 projectId,
-                format: 'html',
+                format: report.file_type || "html",
             });
         } catch (err: any) {
             setError(err.message || "Failed to generate report. Please try again.");

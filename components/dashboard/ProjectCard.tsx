@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Download, Loader2, Eye, Trash2 } from "lucide-react";
-import { generateProjectReport } from "@/lib/export-utils";
+import { createReport } from "@/lib/api";
 import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 import Home from "./dashboard/icons/Home";
 import Floors from "./dashboard/icons/Floors";
@@ -60,37 +60,31 @@ export default function ProjectCard({ project, onDelete }: ProjectCardProps) {
 
     try {
       setIsExporting(true);
-      const result = await generateProjectReport(project.id);
 
-      if (!result.success) {
-        // Show specific error using a toast-like approach for now (or a nicer alert)
-        // Since user asked for "like delete project success message", we should eventually use a real Toast component.
-        // For now, I'll assume ProjectCardMenu's toast or add a local error state.
-        // Let's allow the error to be caught or shown via alert but with the precise message.
-        // Actually, let's implement the toast logic requested.
-        // I will add a temporary local toast for error here or trigger a callback.
+      const report = await createReport(project.id);
 
-        // For this file, I'll add an error toast state.
-        setToast({ message: result.error || "Export failed", type: "error" });
-        return;
-      }
-
-      // Create blob and open
-      const blob = new Blob([result.html], { type: "text/html" });
+      // Fetch the HTML and open via Blob so it always renders,
+      // regardless of Supabase's content-type / sandbox behavior.
+      const res = await fetch(report.file_url);
+      const html = await res.text();
+      const blob = new Blob([html], { type: "text/html" });
       const blobUrl = URL.createObjectURL(blob);
 
       window.open(blobUrl, "_blank");
 
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-
       trackEvent(ANALYTICS_EVENTS.EXPORT_GENERATED, {
         projectId: project.id,
-        format: "html",
+        format: report.file_type || "html",
         source: "dashboard_card",
       });
-    } catch (error) {
+
+      setToast({ message: "Report generated successfully.", type: "success" });
+    } catch (error: any) {
       console.error("Export failed:", error);
-      setToast({ message: "An unexpected error occurred.", type: "error" });
+      setToast({
+        message: error?.message || "Failed to generate report. Please try again.",
+        type: "error",
+      });
     } finally {
       setIsExporting(false);
     }

@@ -77,6 +77,8 @@ export default function SignupPage() {
           .insert({
             id: crypto.randomUUID(),
             auth_uid: data.user.id,
+            email: formData.email,
+            full_name: formData.name,
           });
 
         if (insertError) {

@@ -783,3 +783,65 @@ export async function exportProject(projectId: string): Promise<{ project_id: st
         throw error;
     }
 }
+
+// -----------------------------
+// Reports
+// -----------------------------
+
+export interface Report {
+    id: string;
+    project_id: string;
+    file_url: string;
+    file_type: string;
+    created_at: string;
+}
+
+/**
+ * Create a new report for a project (stored in backend DB)
+ */
+export async function createReport(projectId: string): Promise<Report> {
+    try {
+        const headers = await getAuthHeaders();
+
+        const response = await fetch(`${API_BASE_URL}/projects/${projectId}/reports`, {
+            method: 'POST',
+            headers,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `Failed to create report: ${response.statusText}`);
+        }
+
+        const report: Report = await response.json();
+        return report;
+    } catch (error) {
+        console.error('Error creating report:', error);
+        throw error;
+    }
+}
+
+/**
+ * List reports for a project
+ */
+export async function getProjectReports(projectId: string): Promise<Report[]> {
+    try {
+        const headers = await getAuthHeaders();
+
+        const response = await fetch(`${API_BASE_URL}/projects/${projectId}/reports`, {
+            method: 'GET',
+            headers,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `Failed to fetch reports: ${response.statusText}`);
+        }
+
+        const reports: Report[] = await response.json();
+        return reports;
+    } catch (error) {
+        console.error('Error fetching project reports:', error);
+        throw error;
+    }
+}
