@@ -6,8 +6,9 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { Suspense } from "react";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
@@ -38,10 +39,10 @@ export default function LoginPage() {
   }, [mounted]);
 
   useEffect(() => {
-    if (searchParams.get("reset") === "success") {
+    if (mounted && searchParams.get("reset") === "success") {
       setNotice("Password updated successfully. Sign in with your new password.");
     }
-  }, [searchParams]);
+  }, [searchParams, mounted]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -219,5 +220,31 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/signin/signinbg.png')" }}>
+          <div className="hidden lg:flex lg:w-[50%] relative">
+            <Image src="/images/signin/construct.png" alt="Construction site" fill className="object-cover" priority />
+          </div>
+          <div className="flex w-full lg:w-[50%] items-center justify-center px-6 py-12">
+            <div className="w-full max-w-md">
+              <div className="bg-white rounded-2xl shadow-lg px-8 py-10">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-10 bg-gray-200 rounded w-24 mx-auto"></div>
+                  <div className="h-4 bg-gray-200 rounded w-32 mx-auto"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
