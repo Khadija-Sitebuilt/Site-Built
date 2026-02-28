@@ -2,18 +2,26 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    if (searchParams.get("reset") === "success") {
+      setNotice("Password updated successfully. Sign in with your new password.");
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,11 +37,10 @@ export default function LoginPage() {
       if (signInError) throw signInError;
 
       if (data.user) {
-        // Successfully logged in
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "An error occurred during login");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred during login");
     } finally {
       setLoading(false);
     }
@@ -44,7 +51,6 @@ export default function LoginPage() {
       className="flex min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/images/signin/signinbg.png')" }}
     >
-      {/* Left Side - Construction Site Image */}
       <div className="hidden lg:flex lg:w-[50%] relative">
         <Image
           src="/images/signin/construct.png"
@@ -55,12 +61,9 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* Right Side - Login Form */}
       <div className="flex w-full lg:w-[50%] items-center justify-center px-6 py-12 relative">
         <div className="w-full max-w-md">
-          {/* Login Card */}
           <div className="bg-white rounded-2xl shadow-lg px-8 py-10 relative">
-            {/* Logo */}
             <div className="flex justify-center mb-6">
               <Link href="/" className="inline-block transition-transform duration-200 hover:scale-105">
                 <Image
@@ -73,28 +76,25 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* Welcome Text */}
             <div className="text-center mb-8">
-              <p className="text-gray-600 text-sm">
-                Welcome back. Continue where you left off.
-              </p>
+              <p className="text-gray-600 text-sm">Welcome back. Continue where you left off.</p>
             </div>
 
-            {/* Error Message */}
+            {notice && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-700">{notice}</p>
+              </div>
+            )}
+
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
-            {/* Login Form */}
             <form className="space-y-5" onSubmit={handleLogin}>
-              {/* Email Field */}
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   Work Email
                 </label>
                 <input
@@ -111,12 +111,8 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Password Field */}
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -138,16 +134,11 @@ export default function LoginPage() {
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
               </div>
 
-              {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input
@@ -174,7 +165,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Sign In Button */}
               <div className="pt-2">
                 <button
                   type="submit"
@@ -187,13 +177,9 @@ export default function LoginPage() {
               </div>
             </form>
 
-            {/* Sign Up Link */}
             <div className="mt-8 text-center text-sm">
               <span className="text-gray-600">New here? </span>
-              <Link
-                href="/signup"
-                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-              >
+              <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
                 Create an account
               </Link>
             </div>
