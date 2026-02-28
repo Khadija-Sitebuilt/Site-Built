@@ -420,80 +420,29 @@ export async function setPlanActive(projectId: string, planId: string): Promise<
 }
 
 /**
- * Upload a floor plan to a project (directly to Supabase Storage)
+ * Upload a floor plan to a project via backend API (handles PDF conversion)
  */
 export async function uploadPlan(projectId: string, file: File): Promise<Plan> {
     try {
-        const authUserId = await getAuthUserId();
+        // Use backend API for plan uploads to handle PDF → PNG conversion
+        const formData = new FormData();
+        formData.append('file', file);
 
-        if (!authUserId) {
-            throw new Error('User not authenticated');
+        const response = await fetch(
+            `${API_BASE_URL}/projects/${projectId}/plans`,
+            {
+                method: 'POST',
+                headers: await getAuthHeaders(),
+                body: formData
+            }
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || `Failed to upload plan: ${response.statusText}`);
         }
 
-        // Check if this is the first plan (to set as active default)
-        const { count } = await supabase
-            .from('plans')
-            .select('*', { count: 'exact', head: true })
-            .eq('project_id', projectId);
-
-        const isFirstPlan = count === 0;
-
-        // Generate unique filename
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${projectId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-
-        // Upload file to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('plans')
-            .upload(fileName, file, {
-                cacheControl: '3600',
-                upsert: false
-            });
-
-        if (uploadError) {
-            throw new Error(`Failed to upload file: ${uploadError.message}`);
-        }
-
-        // Get public URL for the uploaded file
-        const { data: { publicUrl } } = supabase.storage
-            .from('plans')
-            .getPublicUrl(fileName);
-
-        // Get image dimensions (for images)
-        let width = 0;
-        let height = 0;
-
-        if (file.type.startsWith('image/')) {
-            const dimensions = await getImageDimensions(file);
-            width = dimensions.width;
-            height = dimensions.height;
-        } else {
-            // For PDFs and DXF, use placeholder dimensions
-            // These would ideally be extracted by backend processing
-            width = 1920;
-            height = 1080;
-        }
-
-        // Create plan record in database
-        const { data: planData, error: dbError } = await supabase
-            .from('plans')
-            .insert({
-                id: crypto.randomUUID(),
-                project_id: projectId,
-                file_url: publicUrl,
-                width: width,
-                height: height,
-                is_active: isFirstPlan // Auto-set active if it's the first one
-            })
-            .select()
-            .single();
-
-        if (dbError) {
-            // If database insert fails, try to delete the uploaded file
-            await supabase.storage.from('plans').remove([fileName]);
-            throw new Error(`Failed to create plan record: ${dbError.message}`);
-        }
-
+        const planData = await response.json();
         return planData;
     } catch (error) {
         console.error('Error uploading plan:', error);

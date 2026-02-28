@@ -64,13 +64,9 @@ export default function PlansTab({ projectId }: PlansTabProps) {
     };
 
     const handleFileSelect = async (file: File) => {
-        // Validate file type
-        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf', 'image/vnd.dxf', 'application/dxf'];
-        const allowedExtensions = ['.png', '.jpg', '.jpeg', '.pdf', '.dxf'];
-        const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-
-        if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
-            setError('Invalid file type. Please upload PNG, JPG, PDF, or DXF files.');
+        // Validate file type - only PDFs are allowed now (backend handles conversion)
+        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+            setError('Invalid file type. Please upload a PDF file.');
             return;
         }
 
@@ -353,7 +349,7 @@ export default function PlansTab({ projectId }: PlansTabProps) {
                                     ref={fileInputRef}
                                     type="file"
                                     onChange={handleFileInputChange}
-                                    accept=".dxf,.pdf,.png,.jpg,.jpeg"
+                                    accept=".pdf"
                                     className="hidden"
                                 />
                                 <button
@@ -408,14 +404,14 @@ export default function PlansTab({ projectId }: PlansTabProps) {
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No floor plans yet</h3>
                     <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                        Upload a floor plan to start placing photos and tracking progress.
+                        Upload a PDF floor plan to start placing photos and tracking progress.
                     </p>
 
                     <input
                         ref={fileInputRef}
                         type="file"
                         onChange={handleFileInputChange}
-                        accept=".dxf,.pdf,.png,.jpg,.jpeg"
+                        accept=".pdf"
                         className="hidden"
                     />
                     <button
@@ -597,7 +593,7 @@ export default function PlansTab({ projectId }: PlansTabProps) {
                 ref={replaceFileInputRef}
                 type="file"
                 onChange={handleReplaceFileSelect}
-                accept=".dxf,.pdf,.png,.jpg,.jpeg"
+                accept=".pdf"
                 className="hidden"
             />
         </div>

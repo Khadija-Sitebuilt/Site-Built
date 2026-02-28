@@ -44,6 +44,7 @@ export default function PlanViewer({
     const [zoom, setZoom] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 }); // Committed position
     const [imageLoaded, setImageLoaded] = useState(false);
+    const [imageError, setImageError] = useState<string | null>(null);
     const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
 
     // Tracks which pin is currently being dragged (to hide original or render active version)
@@ -307,7 +308,11 @@ export default function PlanViewer({
                         src={plan.fileUrl}
                         alt={plan.name}
                         onClick={handlePlanClick}
-                        onLoad={() => setImageLoaded(true)}
+                        onLoad={() => {
+                            setImageLoaded(true);
+                            setImageError(null);
+                        }}
+                        onError={() => setImageError('Failed to load plan. The file may be invalid or not an image.')}
                         className="max-w-full max-h-full object-contain select-none"
                         draggable={false}
                     />
@@ -354,7 +359,20 @@ export default function PlanViewer({
                     )}
                 </div>
 
-                {!imageLoaded && (
+                {imageError ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-red-50">
+                        <div className="text-center">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-sm font-medium text-gray-900 mb-1">Unable to Load Plan</h3>
+                            <p className="text-xs text-gray-600 max-w-xs">{imageError}</p>
+                            <p className="text-xs text-gray-500 mt-3">Please ensure the file is a valid PDF and try uploading again.</p>
+                        </div>
+                    </div>
+                ) : !imageLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
                     </div>
