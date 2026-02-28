@@ -5,20 +5,16 @@ import { Bell, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
 import { supabase } from "@/lib/supabase";
-
-interface DashboardHeaderProps {
-  onMenuClick?: () => void;
-  searchQuery?: string;
-  onSearchChange?: (query: string) => void;
-}
+import useSearch from "@/hooks/useSearch";
 
 export default function DashboardHeader({
   onMenuClick,
-  searchQuery = "",
-  onSearchChange,
-}: DashboardHeaderProps) {
+}: {
+  onMenuClick?: () => void;
+}) {
   const [initials, setInitials] = useState<string>("JD");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const { searchQuery, setSearchQuery } = useSearch();
 
   useEffect(() => {
     const fetchUserInitials = async () => {
@@ -44,8 +40,10 @@ export default function DashboardHeader({
         if (fullName && fullName.trim().length > 0) {
           const parts = fullName.trim().split(/\s+/);
           const first = parts[0]?.[0] ?? "";
-          const last = parts.length > 1 ? parts[parts.length - 1][0] ?? "" : "";
-          derivedInitials = (first + last).toUpperCase() || first.toUpperCase() || "JD";
+          const last =
+            parts.length > 1 ? (parts[parts.length - 1][0] ?? "") : "";
+          derivedInitials =
+            (first + last).toUpperCase() || first.toUpperCase() || "JD";
         } else if (data.email) {
           const emailFirstChar = (data.email as string)[0] ?? "";
           derivedInitials = emailFirstChar.toUpperCase() || "JD";
@@ -80,7 +78,7 @@ export default function DashboardHeader({
           {/* Search Bar */}
           <SearchBar
             searchQuery={searchQuery}
-            onSearchChange={onSearchChange}
+            onSearchChange={setSearchQuery}
             placeholder="Search projects, pins, uploads..."
           />
         </div>

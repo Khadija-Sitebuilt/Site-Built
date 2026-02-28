@@ -17,8 +17,9 @@ import Ready from "@/components/dashboard/icons/Ready";
 import CompletedCheck from "@/components/dashboard/icons/CompletedCheck";
 import DataOperation from "@/components/dashboard/dashboard/DataOperation";
 import SearchBar from "@/components/dashboard/SearchBar";
-import useSearch from "@/hooks/useSerarch";
+import useSearch from "@/hooks/useSearch";
 import useStatus from "@/hooks/useStatus";
+import useProjectsChecking from "@/hooks/useProjectsChecking";
 
 // Mock data for recent activity
 const mockActivities = [
@@ -55,6 +56,7 @@ const mockActivities = [
 export default function DashboardPage() {
   const [greeting, setGreeting] = useState("Welcome");
   const { searchQuery, setSearchQuery } = useSearch();
+  const { hasProjects, setHasProjects } = useProjectsChecking();
   const { statusFilter, setStatusFilter } = useStatus();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -173,6 +175,7 @@ export default function DashboardPage() {
         });
 
         setProjects(projectsWithDetails);
+        setHasProjects(projectsWithDetails.length > 0);
       } catch (err: any) {
         console.error("Error fetching projects:", err);
         setError(err.message || "Failed to load projects");
@@ -201,6 +204,9 @@ export default function DashboardPage() {
 
       setShowDeleteModal(false);
       setProjectToDelete(null);
+      // Project update occurs after the ui is rendered
+      // When the length is 0, sets the hasProjects variable to false
+      setHasProjects(projects.length > 1);
       setToast({ message: "Project deleted successfully", type: "success" });
     } catch (err: any) {
       console.error("Error deleting project:", err);
@@ -443,7 +449,7 @@ export default function DashboardPage() {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={confirmDelete}
         title="Delete Project?"
-        message="Are you sure you want to delete this project? This will permanently delete all associated plans, photos, and data.\n\nThis action cannot be undone."
+        message={`Are you sure you want to delete this project? This will permanently delete all associated plans, photos, and data.\n\nThis action cannot be undone.`}
         confirmText="Delete Project"
         confirmStyle="danger"
         isLoading={isDeleting}

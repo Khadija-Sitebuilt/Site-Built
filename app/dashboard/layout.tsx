@@ -1,25 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { SearchContext } from "@/hooks/useSerarch";
-import StatusProvider from "./status-provider";
+import { SearchContextProvider } from "@/contexts/search";
+import { StatusContextProvider } from "@/contexts/status";
+import { ProjectsCheckingContextProvider } from "@/contexts/projectsChecking";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  // const [statusFilter, setStatusFilter] = useState("All Status");
 
   return (
-    <SearchContext
-      value={{ searchQuery, setSearchQuery }} //, statusFilter, setStatusFilter }}
-    >
-      <div className="flex h-screen bg-[#f9fafb] overflow-hidden">
+    <div className="flex h-screen bg-[#f9fafb] overflow-hidden">
+      <ProjectsCheckingContextProvider>
         {/* Sidebar - Mobile Overlay */}
         {sidebarOpen && (
           <div
@@ -39,17 +32,15 @@ export default function DashboardLayout({
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          <DashboardHeader
-            onMenuClick={() => setSidebarOpen(!sidebarOpen)}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
+          <SearchContextProvider>
+            <DashboardHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-          <main className="flex-1 overflow-y-auto pb-8 px-8 bg-linear-[182deg,#f9fafb,#dde7fc40_15%,#f9fafb_60%]">
-            <StatusProvider>{children}</StatusProvider>
-          </main>
+            <main className="flex-1 overflow-y-auto pb-8 px-8 bg-linear-[182deg,#f9fafb,#dde7fc40_15%,#f9fafb_60%]">
+              <StatusContextProvider>{children}</StatusContextProvider>
+            </main>
+          </SearchContextProvider>
         </div>
-      </div>
-    </SearchContext>
+      </ProjectsCheckingContextProvider>
+    </div>
   );
 }

@@ -82,7 +82,8 @@ export default function ProjectCard({ project, onDelete }: ProjectCardProps) {
     } catch (error: any) {
       console.error("Export failed:", error);
       setToast({
-        message: error?.message || "Failed to generate report. Please try again.",
+        message:
+          error?.message || "Failed to generate report. Please try again.",
         type: "error",
       });
     } finally {

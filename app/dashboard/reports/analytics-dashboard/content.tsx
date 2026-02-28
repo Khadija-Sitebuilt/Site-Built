@@ -84,7 +84,7 @@ export default function AnalyticsDashboard() {
   return (
     <div className="flex flex-col gap-6 bg-white p-6 rounded-[0.875rem]">
       <div className="flex gap-6 items-start">
-        <div className="flex-1 bg-white rounded-[0.875rem] p-5 border border-black/10 shadow-md">
+        <div className="flex-1 bg-white rounded-[0.875rem] p-5 border border-black/10 shadow-md min-w-0">
           <h2 className="font-['Arial',sans-serif] text-[#0a0a0a] leading-4 mb-1.5">
             Accuracy Trends
           </h2>
@@ -119,7 +119,7 @@ export default function AnalyticsDashboard() {
           />
         </div>
 
-        <div className="flex-1 bg-white rounded-[0.875rem] p-5 border border-black/10 shadow-md">
+        <div className="flex-1 bg-white rounded-[0.875rem] p-5 border border-black/10 shadow-md min-w-0">
           <h2 className="font-['Arial',sans-serif] text-[#0a0a0a] leading-4 mb-1.5">
             Upload Duration
           </h2>
@@ -152,7 +152,7 @@ export default function AnalyticsDashboard() {
       </div>
 
       <div className="flex gap-6 items-start">
-        <div className="flex-1 bg-white rounded-[0.875rem] p-5 border border-black/10 shadow-md">
+        <div className="flex-1 bg-white rounded-[0.875rem] p-5 border border-black/10 shadow-md min-w-0">
           <h2 className="font-['Arial',sans-serif] text-[#0a0a0a] leading-4 mb-1.5">
             Project Status Distribution
           </h2>
@@ -176,7 +176,7 @@ export default function AnalyticsDashboard() {
           />
         </div>
 
-        <div className="flex-1 bg-white rounded-[0.875rem] p-5 border border-black/10 shadow-md">
+        <div className="flex-1 bg-white rounded-[0.875rem] p-5 border border-black/10 shadow-md min-w-0">
           <h2 className="font-['Arial',sans-serif] text-[#0a0a0a] leading-4 mb-1.5">
             Monthly Progress
           </h2>

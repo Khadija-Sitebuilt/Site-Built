@@ -17,7 +17,7 @@ import Ready from "@/components/dashboard/icons/Ready";
 import CompletedCheck from "@/components/dashboard/icons/CompletedCheck";
 import DataOperation from "@/components/dashboard/dashboard/DataOperation";
 import SearchBar from "@/components/dashboard/SearchBar";
-import useSearch from "@/hooks/useSerarch";
+import useSearch from "@/hooks/useSearch";
 import useStatus from "@/hooks/useStatus";
 
 // Mock data for recent activity

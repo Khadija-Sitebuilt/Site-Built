@@ -21,10 +21,11 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
       if (signInError) throw signInError;
 
@@ -62,7 +63,10 @@ export default function LoginPage() {
           <div className="bg-white rounded-2xl shadow-lg px-8 py-10 relative">
             {/* Logo */}
             <div className="flex justify-center mb-6">
-              <Link href="/" className="inline-block transition-transform duration-200 hover:scale-105">
+              <Link
+                href="/"
+                className="inline-block transition-transform duration-200 hover:scale-105"
+              >
                 <Image
                   src="/images/sitebuilt.svg"
                   alt="SiteBuilt Logo"
@@ -136,12 +140,14 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
                       <Eye className="w-5 h-5" />
+                    ) : (
+                      <EyeOff className="w-5 h-5" />
                     )}
                   </button>
                 </div>
@@ -166,7 +172,7 @@ export default function LoginPage() {
 
                 <div className="text-sm">
                   <Link
-                    href="/forgot-password"
+                    href="/reset-password"
                     className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
                   >
                     Forgot Password?
