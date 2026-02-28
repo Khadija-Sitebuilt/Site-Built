@@ -17,10 +17,16 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [redirecting, setRedirecting] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Handle recovery link redirect
+  // Ensure component is mounted before accessing window
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    setMounted(true);
+  }, []);
+
+  // Handle recovery link redirect (only after mount)
+  useEffect(() => {
+    if (!mounted) return;
     
     const hash = window.location.hash;
     if (hash && hash.includes('type=recovery')) {
@@ -28,9 +34,8 @@ export default function LoginPage() {
       // Directly navigate to reset-password with hash preserved
       // Using window.location to ensure hash is properly preserved
       window.location.href = `/reset-password${hash}`;
-      return;
     }
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
     if (searchParams.get("reset") === "success") {
