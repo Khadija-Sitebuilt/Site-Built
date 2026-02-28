@@ -428,11 +428,15 @@ export async function uploadPlan(projectId: string, file: File): Promise<Plan> {
         const formData = new FormData();
         formData.append('file', file);
 
+        const authHeaders = {
+            'X-User-Id': await getAuthUserId() || '',
+        };
+
         const response = await fetch(
             `${API_BASE_URL}/projects/${projectId}/plans`,
             {
                 method: 'POST',
-                headers: await getAuthHeaders(),
+                headers: authHeaders,
                 body: formData
             }
         );

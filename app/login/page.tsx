@@ -16,14 +16,19 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [redirecting, setRedirecting] = useState(false);
 
+  // Handle recovery link redirect
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const hash = window.location.hash;
-    if (!hash) return;
-
-    const hashParams = new URLSearchParams(hash.replace("#", ""));
-    if (hashParams.get("type") === "recovery") {
-      window.location.replace(`/reset-password${hash}`);
+    if (hash && hash.includes('type=recovery')) {
+      setRedirecting(true);
+      // Directly navigate to reset-password with hash preserved
+      // Using window.location to ensure hash is properly preserved
+      window.location.href = `/reset-password${hash}`;
+      return;
     }
   }, []);
 
@@ -55,6 +60,18 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  // Show loading state while redirecting to reset password page
+  if (redirecting) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Processing your password reset link...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
