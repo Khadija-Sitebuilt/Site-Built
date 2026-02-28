@@ -12,6 +12,7 @@ export default function OTPPage() {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const email = "";
 
   const handleOTPSubmission = async (e: FormEvent) => {
     e.preventDefault();
