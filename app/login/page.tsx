@@ -18,6 +18,16 @@ export default function LoginPage() {
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    const hashParams = new URLSearchParams(hash.replace("#", ""));
+    if (hashParams.get("type") === "recovery") {
+      window.location.replace(`/reset-password${hash}`);
+    }
+  }, []);
+
+  useEffect(() => {
     if (searchParams.get("reset") === "success") {
       setNotice("Password updated successfully. Sign in with your new password.");
     }
