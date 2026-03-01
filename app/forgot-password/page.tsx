@@ -228,18 +228,18 @@ export default function ForgotPasswordPage() {
                     inputMode="numeric"
                     required
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 8))}
                     className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-center text-2xl tracking-widest font-mono"
-                    placeholder="000000"
+                    placeholder="00000000"
                     disabled={loading}
-                    maxLength={6}
+                    maxLength={8}
                   />
-                  <p className="text-xs text-gray-500 mt-2">6-digit code from your email</p>
+                  <p className="text-xs text-gray-500 mt-2">8-digit code from your email</p>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading || otp.length !== 6}
+                  disabled={loading || otp.length !== 8}
                   className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading ? (
