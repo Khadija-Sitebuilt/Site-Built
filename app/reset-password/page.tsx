@@ -20,11 +20,22 @@ export default function ResetPasswordPage() {
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure component is mounted before accessing window
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const establishRecoverySession = async () => {
       try {
         setError("");
+
+        // Wait a brief moment for Supabase to process the redirect
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         const searchParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.replace("#", ""));
@@ -32,7 +43,9 @@ export default function ResetPasswordPage() {
         const code = searchParams.get("code");
         const accessToken = hashParams.get("access_token");
         const refreshToken = hashParams.get("refresh_token");
+        const type = hashParams.get("type");
 
+        // Handle recovery token flow
         if (code) {
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
           if (exchangeError) throw exchangeError;
@@ -40,6 +53,13 @@ export default function ResetPasswordPage() {
           const { error: sessionError } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken,
+          });
+          if (sessionError) throw sessionError;
+        } else if (type === "recovery" && accessToken) {
+          // Handle recovery type with just access token
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || "",
           });
           if (sessionError) throw sessionError;
         }
@@ -64,7 +84,7 @@ export default function ResetPasswordPage() {
     };
 
     establishRecoverySession();
-  }, []);
+  }, [mounted]);
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
