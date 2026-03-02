@@ -26,9 +26,13 @@ export default function ResetPasswordPage() {
         },
       });
 
-      if (OTPError) throw OTPError;
+      if (OTPError) {
+        setError(OTPError.message || "Failed to send OTP");
+        return;
+      }
 
       // Successfully requested OTP
+      localStorage.setItem("resetPasswordEmail", email); // Store email for OTP verification step
       router.push("/otp");
     } catch (err: any) {
       setError(err.message || "An error occurred during login");

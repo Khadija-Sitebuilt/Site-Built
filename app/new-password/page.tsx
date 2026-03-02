@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -16,24 +16,41 @@ export default function NewPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    const signOutUser = async () => {
+      await supabase.auth.signOut();
+    };
+
+    return () => {
+      signOutUser();
+    };
+  }, []);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      // const { data, error: signInError } =
-      // await supabase.auth.signInWithPassword({
-      // email,
-      // password,
-      // });
+      if (newPassword !== confirmNewPassword) {
+        setError("Passwords do not match");
+        return;
+      }
 
-      // if (signInError) throw signInError;
+      const { error: changePasswordError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
 
-      // if (data.user) {
+      if (changePasswordError) {
+        setError(
+          changePasswordError.message ||
+            "An error occurred while changing the password",
+        );
+        return;
+      }
+
       // Successfully logged in
-      router.push("/dashboard");
-      // }
+      router.push("/login");
     } catch (err: any) {
       setError(err.message || "An error occurred during login");
     } finally {
@@ -95,8 +112,7 @@ export default function NewPasswordPage() {
             )}
 
             {/* New Password Form */}
-            <form className="space-y-5">
-              {/* onSubmit={handleLogin}> */}
+            <form className="space-y-5" onSubmit={handleChangePassword}>
               {/* New Password Field */}
               <div>
                 <label
@@ -174,33 +190,7 @@ export default function NewPasswordPage() {
                   </button>
                 </div>
               </div>
-              {/* Remember Me & Forgot Password */}
-              {/* <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="remember-me"
-                    className="ml-2 block text-sm text-gray-600 cursor-pointer"
-                  >
-                    Remember me
-                  </label>
-                </div>
 
-                <div className="text-sm">
-                  <Link
-                    href="/reset-password"
-                    className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-                  >
-                    Forgot Password?
-                  </Link>
-                </div>
-              </div> */}
-              {/* Sign In Button */}
               <div className="pt-2">
                 <button
                   type="submit"

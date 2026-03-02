@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -12,7 +12,23 @@ export default function OTPPage() {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const email = "";
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("resetPasswordEmail");
+
+    if (storedEmail) {
+      setEmail(storedEmail);
+    } else {
+      setError(
+        "No email found for OTP verification. Please start the reset process again.",
+      );
+    }
+
+    return () => {
+      localStorage.removeItem("resetPasswordEmail");
+    };
+  }, []);
 
   const handleOTPSubmission = async (e: FormEvent) => {
     e.preventDefault();
