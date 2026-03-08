@@ -39,7 +39,7 @@ export default function OTPPage() {
       const { error: signInError } = await createClient().auth.verifyOtp({
         email: email,
         token,
-        type: "email",
+        type: "recovery",
       });
 
       if (signInError) throw signInError;
@@ -123,14 +123,19 @@ export default function OTPPage() {
                 <input
                   id="otp"
                   name="otp"
-                  type="number"
+                  type="text"
                   pattern="^\d{6,8}$"
                   autoComplete="token"
+                  minLength={6}
+                  maxLength={8}
+                  inputMode="numeric"
                   required
                   value={token}
-                  onChange={(e) => setToken(e.target.value)}
+                  onChange={(e) =>
+                    setToken(e.target.value.replace(/\D/g, "").slice(0, 8))
+                  }
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="you@domain.com"
+                  placeholder="00000000"
                   disabled={loading}
                 />
               </div>
