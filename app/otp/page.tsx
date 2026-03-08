@@ -15,7 +15,7 @@ export default function OTPPage() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("resetPasswordEmail");
+    const storedEmail = sessionStorage.getItem("resetPasswordEmail");
 
     if (storedEmail) {
       setEmail(storedEmail);
@@ -24,10 +24,6 @@ export default function OTPPage() {
         "No email found for OTP verification. Please start the reset process again.",
       );
     }
-
-    return () => {
-      localStorage.removeItem("resetPasswordEmail");
-    };
   }, []);
 
   const handleOTPSubmission = async (e: FormEvent) => {
@@ -44,10 +40,14 @@ export default function OTPPage() {
 
       if (signInError) throw signInError;
 
-      // Successfully logged in
+      sessionStorage.removeItem("resetPasswordEmail");
       router.push("/new-password");
-    } catch (err: any) {
-      setError(err.message || "An error occurred during login");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred during OTP verification",
+      );
     } finally {
       setLoading(false);
     }

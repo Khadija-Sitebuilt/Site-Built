@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
@@ -16,32 +16,6 @@ export default function NewPasswordPage() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    async function handleBeforeUnload() {
-      console.log("Handling before unload event");
-
-      const {
-        data: { session },
-      } = await createClient().auth.getSession();
-
-      if (session) {
-        console.log("Signing out user before unload");
-        await createClient().auth.signOut();
-      }
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      // Clean up the event listener on component unmount
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-
-      // Ensure we sign out when the component unmounts as well
-      // This is a safeguard in case the user navigates away without triggering beforeunload
-      handleBeforeUnload();
-    };
-  }, []);
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +37,11 @@ export default function NewPasswordPage() {
         return;
       }
 
+      if (newPassword.length < 6) {
+        setError("Password must be at least 6 characters");
+        return;
+      }
+
       const { error: changePasswordError } =
         await createClient().auth.updateUser({
           password: newPassword,
@@ -76,10 +55,14 @@ export default function NewPasswordPage() {
         return;
       }
 
-      // Successfully changed password
-      router.push("/login");
-    } catch (err: any) {
-      setError(err.message || "An error occurred during login");
+      await createClient().auth.signOut();
+      router.push("/login?reset=success");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred during password reset",
+      );
     } finally {
       setLoading(false);
     }

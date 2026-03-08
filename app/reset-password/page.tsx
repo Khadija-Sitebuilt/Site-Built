@@ -31,11 +31,15 @@ export default function ResetPasswordPage() {
         return;
       }
 
-      // Successfully requested OTP
-      localStorage.setItem("resetPasswordEmail", email); // Store email for OTP verification step
+      // Persist the recovery email only for this browser tab.
+      sessionStorage.setItem("resetPasswordEmail", email);
       router.push("/otp");
-    } catch (err: any) {
-      setError(err.message || "An error occurred during login");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred during password reset",
+      );
     } finally {
       setLoading(false);
     }

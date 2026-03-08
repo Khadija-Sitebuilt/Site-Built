@@ -25,10 +25,23 @@ function LoginContent() {
   }, []);
 
   useEffect(() => {
-    if (mounted && searchParams.get("reset") === "success") {
+    if (!mounted) {
+      return;
+    }
+
+    const resetStatus = searchParams.get("reset");
+    const callbackError = searchParams.get("error");
+
+    if (resetStatus === "success") {
       setNotice(
         "Password updated successfully. Sign in with your new password.",
       );
+    } else {
+      setNotice("");
+    }
+
+    if (callbackError) {
+      setError(callbackError);
     }
   }, [searchParams, mounted]);
 
