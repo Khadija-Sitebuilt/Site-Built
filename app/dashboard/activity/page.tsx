@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import ActivityItem from "@/components/dashboard/activity/ActivityItem";
 import { CircleX } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import ArrowRight from "@/components/dashboard/icons/ArrowRight";
 import StatusCard from "@/components/dashboard/dashboard/StatusCard";

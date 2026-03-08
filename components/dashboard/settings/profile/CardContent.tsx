@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import Form from "./Form";
 
 export default function ProfileCardContent() {
-  const [avatarUrl, setAvatarUrl] = useState("/images/dashboard/settings/profile.jpg");
+  const [avatarUrl, setAvatarUrl] = useState(
+    "/images/dashboard/settings/profile.jpg",
+  );
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -15,10 +17,12 @@ export default function ProfileCardContent() {
   useEffect(() => {
     const fetchUserAvatar = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await createClient().auth.getUser();
         if (!user) return;
 
-        const { data } = await supabase
+        const { data } = await createClient()
           .from("users")
           .select("avatar_url")
           .eq("auth_uid", user.id)
@@ -35,7 +39,9 @@ export default function ProfileCardContent() {
     fetchUserAvatar();
   }, []);
 
-  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -49,25 +55,29 @@ export default function ProfileCardContent() {
     setError("");
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await createClient().auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       // Upload to Supabase Storage
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}-avatar.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
+      const { error: uploadError } = await createClient()
+        .storage.from("avatars")
         .upload(fileName, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
       // Get public URL
-      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      const { data } = createClient()
+        .storage.from("avatars")
+        .getPublicUrl(fileName);
       const publicUrl = data.publicUrl;
 
       // Update user record with avatar URL
-      const { error: updateError } = await supabase
+      const { error: updateError } = await createClient()
         .from("users")
         .update({ avatar_url: publicUrl })
         .eq("auth_uid", user.id);

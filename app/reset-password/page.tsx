@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export default function ResetPasswordPage() {
     setError("");
 
     try {
-      const { error: OTPError } = await supabase.auth.signInWithOtp({
+      const { error: OTPError } = await createClient().auth.signInWithOtp({
         email,
         options: {
           shouldCreateUser: false,

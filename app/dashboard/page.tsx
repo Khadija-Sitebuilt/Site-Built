@@ -7,7 +7,7 @@ import ProjectCardSkeleton from "@/components/dashboard/ProjectCardSkeleton";
 import ActivityItem from "@/components/dashboard/activity/ActivityItem";
 import { Filter } from "lucide-react";
 import { getProjectsWithStats, deleteProject } from "@/lib/api";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import ArrowRight from "@/components/dashboard/icons/ArrowRight";
 import ProjectsFolder from "@/components/dashboard/icons/ProjectsFolder";

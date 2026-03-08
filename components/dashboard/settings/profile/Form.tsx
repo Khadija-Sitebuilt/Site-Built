@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Form() {
   const [formData, setFormData] = useState({
@@ -20,7 +20,10 @@ export default function Form() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const {
+          data: { user },
+          error: authError,
+        } = await createClient().auth.getUser();
 
         if (authError || !user) {
           setError("Failed to load user data");
@@ -28,7 +31,7 @@ export default function Form() {
           return;
         }
 
-        const { data, error: fetchError } = await supabase
+        const { data, error: fetchError } = await createClient()
           .from("users")
           .select("full_name, email, phone_number")
           .eq("auth_uid", user.id)
@@ -41,7 +44,9 @@ export default function Form() {
         }
 
         if (data) {
-          const nameParts = data.full_name ? data.full_name.split(" ") : ["", ""];
+          const nameParts = data.full_name
+            ? data.full_name.split(" ")
+            : ["", ""];
           setFormData({
             firstName: nameParts[0] || "",
             lastName: nameParts.slice(1).join(" ") || "",
@@ -74,7 +79,10 @@ export default function Form() {
     setSuccess(false);
 
     try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error: authError,
+      } = await createClient().auth.getUser();
 
       if (authError || !user) {
         throw new Error("Not authenticated");
@@ -82,7 +90,7 @@ export default function Form() {
 
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
 
-      const { error: updateError } = await supabase
+      const { error: updateError } = await createClient()
         .from("users")
         .update({
           full_name: fullName,

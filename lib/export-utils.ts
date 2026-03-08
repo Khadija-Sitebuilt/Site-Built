@@ -1,74 +1,89 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { getProject } from "@/lib/api";
 
-export type ExportResult = { success: true; html: string } | { success: false; error: string };
+export type ExportResult =
+  | { success: true; html: string }
+  | { success: false; error: string };
 
-export const generateProjectReport = async (projectId: string): Promise<ExportResult> => {
-    // Parallel Fetching: Project, Plans, Photos
-    const [projectData, plansResult, photosResult] = await Promise.all([
-        getProject(projectId).catch(() => ({ name: 'Project' })),
-        supabase
-            .from('plans')
-            .select('id, width, height, file_url, is_active, created_at')
-            .eq('project_id', projectId)
-            .order('created_at', { ascending: false }),
-        supabase
-            .from('photos')
-            .select('*') // Need all fields for EXIF etc
-            .eq('project_id', projectId)
-            .order('created_at', { ascending: false })
-    ]);
+export const generateProjectReport = async (
+  projectId: string,
+): Promise<ExportResult> => {
+  // Parallel Fetching: Project, Plans, Photos
+  const [projectData, plansResult, photosResult] = await Promise.all([
+    getProject(projectId).catch(() => ({ name: "Project" })),
+    createClient()
+      .from("plans")
+      .select("id, width, height, file_url, is_active, created_at")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: false }),
+    createClient()
+      .from("photos")
+      .select("*") // Need all fields for EXIF etc
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: false }),
+  ]);
 
-    const plans = plansResult.data || [];
-    const photos = photosResult.data || [];
+  const plans = plansResult.data || [];
+  const photos = photosResult.data || [];
 
-    // Get plan IDs to fetch placements
-    const planIds = plans.map((p: any) => p.id);
+  // Get plan IDs to fetch placements
+  const planIds = plans.map((p: any) => p.id);
 
-    let placements: any[] = [];
-    if (planIds.length > 0) {
-        const { data } = await supabase
-            .from('photo_placements')
-            .select('*')
-            .in('plan_id', planIds);
-        placements = data || [];
-    }
+  let placements: any[] = [];
+  if (planIds.length > 0) {
+    const { data } = await createClient()
+      .from("photo_placements")
+      .select("*")
+      .in("plan_id", planIds);
+    placements = data || [];
+  }
 
-    const mainPlan = plans?.[0];
-    const currentDate = new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+  const mainPlan = plans?.[0];
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
-    // Filter placements for the main plan
-    const planPlacements = placements.filter((p: any) => p.plan_id === mainPlan?.id);
+  // Filter placements for the main plan
+  const planPlacements = placements.filter(
+    (p: any) => p.plan_id === mainPlan?.id,
+  );
 
-    // --- Strict Validation Rules ---
-    // Return error objects instead of throwing
-    if (!mainPlan) {
-        return { success: false, error: "Cannot Export: This project has no floor plan." };
-    }
+  // --- Strict Validation Rules ---
+  // Return error objects instead of throwing
+  if (!mainPlan) {
+    return {
+      success: false,
+      error: "Cannot Export: This project has no floor plan.",
+    };
+  }
 
-    if (photos.length === 0) {
-        return { success: false, error: "Cannot Export: This project has no photos yet." };
-    }
+  if (photos.length === 0) {
+    return {
+      success: false,
+      error: "Cannot Export: This project has no photos yet.",
+    };
+  }
 
-    // Verify all photos are pinned
-    const unpinnedPhotos = photos.filter((photo: any) =>
-        !placements.some((p: any) => p.photo_id === photo.id)
-    );
+  // Verify all photos are pinned
+  const unpinnedPhotos = photos.filter(
+    (photo: any) => !placements.some((p: any) => p.photo_id === photo.id),
+  );
 
-    if (unpinnedPhotos.length > 0) {
-        return { success: false, error: `Cannot Export: ${unpinnedPhotos.length} photo(s) are not pinned. Please pin all photos.` };
-    }
+  if (unpinnedPhotos.length > 0) {
+    return {
+      success: false,
+      error: `Cannot Export: ${unpinnedPhotos.length} photo(s) are not pinned. Please pin all photos.`,
+    };
+  }
 
-    const htmlContent = `<!DOCTYPE html>
+  const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${projectData.name || 'Project'} - As-Built Report</title>
+    <title>${projectData.name || "Project"} - As-Built Report</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -363,7 +378,7 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
             <div class="cover-top">
                 <div class="company-brand">SiteBuilt Documentation</div>
                 <div class="cover-header">
-                    <h1 class="report-title">${projectData.name || 'Unnamed Project'}</h1>
+                    <h1 class="report-title">${projectData.name || "Unnamed Project"}</h1>
                     <div class="report-subtitle">As-Built Documentation Report</div>
                 </div>
             </div>
@@ -389,17 +404,20 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
         </div>
 
         <!-- PLAN VIEW PAGE -->
-        ${mainPlan ? `
+        ${
+          mainPlan
+            ? `
         <div class="page page-break">
             <div class="section-header">
                 <h2 class="section-title">Site Overview Plan</h2>
             </div>
             <div class="plan-container">
                 <img src="${mainPlan.file_url}" class="plan-image" alt="Floor Plan" />
-                ${planPlacements.map((p: any, idx: number) => {
-        const isGps = p.placement_method !== 'manual';
-        const color = isGps ? '#10B981' : '#F59E0B';
-        return `
+                ${planPlacements
+                  .map((p: any, idx: number) => {
+                    const isGps = p.placement_method !== "manual";
+                    const color = isGps ? "#10B981" : "#F59E0B";
+                    return `
                     <div class="pin" style="left: ${p.x}%; top: ${p.y}%;">
                        <svg width="24" height="30" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M12 0C5.37 0 0 5.37 0 12C0 20 12 30 12 30C12 30 24 20 24 12C24 5.37 18.63 0 12 0Z" fill="${color}" stroke="white" stroke-width="1.5"/>
@@ -408,7 +426,8 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
                        <div class="pin-number" style="color: ${color}">${idx + 1}</div>
                     </div>
                     `;
-    }).join('')}
+                  })
+                  .join("")}
             </div>
             <div style="margin-top: 15px; font-size: 12px; color: var(--secondary);">
                 <strong>Reference Scale:</strong> Plan dimensions ${mainPlan.width}px × ${mainPlan.height}px
@@ -419,26 +438,34 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
                <span>Page 2</span>
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- PHOTOS PAGE -->
-        ${photos.length > 0 ? `
+        ${
+          photos.length > 0
+            ? `
         <div class="page page-break">
             <div class="section-header">
                 <h2 class="section-title">Photo Log</h2>
             </div>
             
             <div class="photo-grid">
-                ${photos.map((photo: any, idx: number) => {
-        const lat = photo.exif_lat?.toFixed(6) || '-';
-        const lng = photo.exif_lng?.toFixed(6) || '-';
-        const time = photo.exif_timestamp
-            ? new Date(photo.exif_timestamp).toLocaleString('en-US', {
-                hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric'
-            })
-            : 'No Timestamp';
+                ${photos
+                  .map((photo: any, idx: number) => {
+                    const lat = photo.exif_lat?.toFixed(6) || "-";
+                    const lng = photo.exif_lng?.toFixed(6) || "-";
+                    const time = photo.exif_timestamp
+                      ? new Date(photo.exif_timestamp).toLocaleString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          month: "short",
+                          day: "numeric",
+                        })
+                      : "No Timestamp";
 
-        return `
+                    return `
                     <div class="photo-item">
                         <img src="${photo.file_url}" class="photo-img" loading="lazy" />
                         <div class="photo-meta">
@@ -446,15 +473,20 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
                                 <span class="photo-id">#${idx + 1}</span>
                                 <span class="photo-time">${time}</span>
                             </div>
-                            ${photo.exif_lat ? `
+                            ${
+                              photo.exif_lat
+                                ? `
                             <div class="photo-coords" title="GPS Coordinates">
                                 📍 ${lat}, ${lng}
                             </div>
-                            ` : ''}
+                            `
+                                : ""
+                            }
                         </div>
                     </div>
                     `;
-    }).join('')}
+                  })
+                  .join("")}
             </div>
             
              <div class="page-footer" style="position: fixed; bottom: 20mm;">
@@ -462,10 +494,14 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
                <span>Photo Appendix</span>
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- DATA TABLE PAGE -->
-        ${planPlacements.length > 0 ? `
+        ${
+          planPlacements.length > 0
+            ? `
         <div class="page">
              <div class="section-header">
                 <h2 class="section-title">Detailed Placement Log</h2>
@@ -482,23 +518,27 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
                     </tr>
                 </thead>
                 <tbody>
-                    ${planPlacements.map((p: any, idx: number) => {
-        const photo = photos.find((ph: any) => ph.id === p.photo_id);
-        const hasGps = photo?.exif_lat && photo?.exif_lng;
-        return `
+                    ${planPlacements
+                      .map((p: any, idx: number) => {
+                        const photo = photos.find(
+                          (ph: any) => ph.id === p.photo_id,
+                        );
+                        const hasGps = photo?.exif_lat && photo?.exif_lng;
+                        return `
                         <tr>
                             <td><strong>${idx + 1}</strong></td>
-                            <td>${photo?.exif_timestamp ? new Date(photo.exif_timestamp).toLocaleString() : '-'}</td>
+                            <td>${photo?.exif_timestamp ? new Date(photo.exif_timestamp).toLocaleString() : "-"}</td>
                             <td style="font-family: monospace">${p.x?.toFixed(2)}%, ${p.y?.toFixed(2)}%</td>
                             <td>${hasGps ? `${photo.exif_lat.toFixed(5)}, ${photo.exif_lng.toFixed(5)}` : '<span style="color:#ccc">-</span>'}</td>
                             <td>
-                                <span class="tag ${p.placement_method === 'manual' ? 'tag-manual' : 'tag-gps'}">
-                                    ${p.placement_method || 'manual'}
+                                <span class="tag ${p.placement_method === "manual" ? "tag-manual" : "tag-gps"}">
+                                    ${p.placement_method || "manual"}
                                 </span>
                             </td>
                         </tr>
                         `;
-    }).join('')}
+                      })
+                      .join("")}
                 </tbody>
             </table>
             
@@ -507,7 +547,9 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
                <span>Data Log</span>
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
     </div>
     <script>
         // Auto-print prompt when opened
@@ -515,5 +557,5 @@ export const generateProjectReport = async (projectId: string): Promise<ExportRe
     </script>
 </body>
 </html>`;
-    return { success: true, html: htmlContent };
+  return { success: true, html: htmlContent };
 };

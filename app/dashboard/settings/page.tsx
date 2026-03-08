@@ -13,7 +13,7 @@ import {
   Moon,
   Target,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import SettingsCard from "@/components/dashboard/settings/SettingsCard";
 import ProfileCardContent from "@/components/dashboard/settings/profile/CardContent";

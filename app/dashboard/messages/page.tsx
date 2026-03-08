@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import MessageCard from "@/components/dashboard/messages/MessageCard";
 import Message, { MessageProps } from "@/components/dashboard/messages/Message";

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Bell, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import useSearch from "@/hooks/useSearch";
 
 export default function DashboardHeader({
@@ -22,11 +22,11 @@ export default function DashboardHeader({
         const {
           data: { user },
           error: authError,
-        } = await supabase.auth.getUser();
+        } = await createClient().auth.getUser();
 
         if (authError || !user) return;
 
-        const { data, error } = await supabase
+        const { data, error } = await createClient()
           .from("users")
           .select("full_name, email, avatar_url")
           .eq("auth_uid", user.id)

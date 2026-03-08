@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 
 export default function OTPPage() {
   const router = useRouter();
@@ -36,10 +36,7 @@ export default function OTPPage() {
     setError("");
 
     try {
-      const {
-        // data: { session },
-        error: signInError,
-      } = await supabase.auth.verifyOtp({
+      const { error: signInError } = await createClient().auth.verifyOtp({
         email: email,
         token,
         type: "email",

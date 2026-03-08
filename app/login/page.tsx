@@ -2,18 +2,35 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { Suspense } from "react";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure component is mounted before accessing window
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && searchParams.get("reset") === "success") {
+      setNotice(
+        "Password updated successfully. Sign in with your new password.",
+      );
+    }
+  }, [searchParams, mounted]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +39,7 @@ export default function LoginPage() {
 
     try {
       const { data, error: signInError } =
-        await supabase.auth.signInWithPassword({
+        await createClient().auth.signInWithPassword({
           email,
           password,
         });
@@ -30,11 +47,12 @@ export default function LoginPage() {
       if (signInError) throw signInError;
 
       if (data.user) {
-        // Successfully logged in
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message || "An error occurred during login");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "An error occurred during login",
+      );
     } finally {
       setLoading(false);
     }
@@ -45,7 +63,6 @@ export default function LoginPage() {
       className="flex min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/images/signin/signinbg.png')" }}
     >
-      {/* Left Side - Construction Site Image */}
       <div className="hidden lg:flex lg:w-[50%] relative">
         <Image
           src="/images/signin/construct.png"
@@ -56,13 +73,10 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* Right Side - Login Form */}
       <div className="flex w-full lg:w-[50%] items-center justify-center px-6 py-12 relative">
         <div className="w-full max-w-md">
-          {/* Login Card */}
-          <div className="bg-white rounded-2xl shadow-lg px-8 py-10 relative">
-            {/* Logo */}
-            <div className="flex justify-center mb-6">
+          <div className="bg-white rounded-2xl shadow-lg p-6 relative">
+            <div className="flex justify-center mb-2.25">
               <Link
                 href="/"
                 className="inline-block transition-transform duration-200 hover:scale-105"
@@ -72,32 +86,38 @@ export default function LoginPage() {
                   alt="SiteBuilt Logo"
                   width={120}
                   height={40}
-                  className="h-auto"
+                  className="h-7.5"
                 />
               </Link>
             </div>
 
-            {/* Welcome Text */}
-            <div className="text-center mb-8">
-              <p className="text-gray-600 text-sm">
+            <div className="text-center mb-2.25">
+              {/* <h1 className="text-2xl font-semibold text-gray-900">Sign in</h1> */}
+              <p className="text-gray-600 text-sm mt-2 leading-6.75">
                 Welcome back. Continue where you left off.
               </p>
             </div>
 
-            {/* Error Message */}
+            {notice && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">{notice}</p>
+              </div>
+            )}
+
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
-            {/* Login Form */}
-            <form className="space-y-5" onSubmit={handleLogin}>
-              {/* Email Field */}
+            <form
+              className="space-y-6.5 my-8.75 border p-5.5 rounded-2xl border-[#16a34a]/5 shadow-[0_1px_3px_#0000001a,0_1px_2px_-1px_#0000001a]"
+              onSubmit={handleLogin}
+            >
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-[#030213] mb-2.25 text-[0.9375rem]"
                 >
                   Work Email
                 </label>
@@ -115,11 +135,10 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Password Field */}
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-[#030213] mb-2.25 text-[0.9375rem]"
                 >
                   Password
                 </label>
@@ -164,7 +183,7 @@ export default function LoginPage() {
                   />
                   <label
                     htmlFor="remember-me"
-                    className="ml-2 block text-sm text-gray-600 cursor-pointer"
+                    className="ml-2 block text-[0.9375rem] text-[#475569]  cursor-pointer"
                   >
                     Remember me
                   </label>
@@ -193,19 +212,45 @@ export default function LoginPage() {
               </div>
             </form>
 
-            {/* Sign Up Link */}
-            <div className="mt-8 text-center text-sm">
-              <span className="text-gray-600">New here? </span>
-              <Link
-                href="/signup"
-                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-              >
-                Create an account
-              </Link>
+            <div className="mt-6 space-y-3 text-center">
+              {/* <div>
+                <Link
+                  href="/reset-password"
+                  className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+                >
+                  Forgot your password?
+                </Link>
+              </div> */}
+              <div className="text-sm text-gray-600">
+                New here?{" "}
+                <Link
+                  href="/signup"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
+                  Create an account
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }

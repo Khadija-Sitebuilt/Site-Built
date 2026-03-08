@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChartColumn, ChevronDown } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import ConfirmModal from "@/components/common/ConfirmModal";
 import ProjectReports from "./project-reports/content";
 import AnalyticsDashboard from "./analytics-dashboard/content";

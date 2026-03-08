@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { LogOut, Menu, Settings } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Home from "./icons/Home";
 import ChevronLeft from "./icons/ChevronLeft";
@@ -182,7 +182,7 @@ export default function Sidebar() {
           {/* Logout Button */}
           <button
             onClick={async () => {
-              await supabase.auth.signOut();
+              await createClient().auth.signOut();
               router.push("/");
             }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors group"

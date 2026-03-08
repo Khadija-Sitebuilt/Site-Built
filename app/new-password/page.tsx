@@ -4,8 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function NewPasswordPage() {
   const router = useRouter();
@@ -17,12 +18,25 @@ export default function NewPasswordPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const signOutUser = async () => {
-      await supabase.auth.signOut();
-    };
+    async function handleBeforeUnload() {
+      const {
+        data: { session },
+      } = await createClient().auth.getSession();
+
+      if (session) {
+        await createClient().auth.signOut();
+      }
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      signOutUser();
+      // Clean up the event listener on component unmount
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+
+      // Ensure we sign out when the component unmounts as well
+      // This is a safeguard in case the user navigates away without triggering beforeunload
+      handleBeforeUnload();
     };
   }, []);
 
@@ -32,14 +46,24 @@ export default function NewPasswordPage() {
     setError("");
 
     try {
+      const { data } = await createClient().auth.getSession();
+
       if (newPassword !== confirmNewPassword) {
         setError("Passwords do not match");
         return;
       }
 
-      const { error: changePasswordError } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
+      if (!data.session) {
+        setError(
+          "No active session found. Please start the reset process again.",
+        );
+        return;
+      }
+
+      const { error: changePasswordError } =
+        await createClient().auth.updateUser({
+          password: newPassword,
+        });
 
       if (changePasswordError) {
         setError(
@@ -49,7 +73,7 @@ export default function NewPasswordPage() {
         return;
       }
 
-      // Successfully logged in
+      // Successfully changed password
       router.push("/login");
     } catch (err: any) {
       setError(err.message || "An error occurred during login");
@@ -80,9 +104,9 @@ export default function NewPasswordPage() {
       <div className="flex w-full lg:w-[50%] items-center justify-center px-6 py-12 relative">
         <div className="w-full max-w-md">
           {/* Login Card */}
-          <div className="bg-white rounded-2xl shadow-lg px-8 py-10 relative">
+          <div className="bg-white rounded-2xl shadow-lg p-6 relative">
             {/* Logo */}
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-2.25">
               <Link
                 href="/"
                 className="inline-block transition-transform duration-200 hover:scale-105"
@@ -92,14 +116,14 @@ export default function NewPasswordPage() {
                   alt="SiteBuilt Logo"
                   width={120}
                   height={40}
-                  className="h-auto"
+                  className="h-7.5"
                 />
               </Link>
             </div>
 
             {/* Welcome Text */}
             <div className="text-center mb-8">
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 text-lg leading-6.75">
                 Kindly enter a new Password.
               </p>
             </div>
@@ -112,7 +136,10 @@ export default function NewPasswordPage() {
             )}
 
             {/* New Password Form */}
-            <form className="space-y-5" onSubmit={handleChangePassword}>
+            <form
+              className="space-y-5 my-8.75 border p-5.5 rounded-2xl border-[#16a34a]/5 shadow-[0_1px_3px_#0000001a,0_1px_2px_-1px_#0000001a]"
+              onSubmit={handleChangePassword}
+            >
               {/* New Password Field */}
               <div>
                 <label
