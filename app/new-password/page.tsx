@@ -19,11 +19,14 @@ export default function NewPasswordPage() {
 
   useEffect(() => {
     async function handleBeforeUnload() {
+      console.log("Handling before unload event");
+
       const {
         data: { session },
       } = await createClient().auth.getSession();
 
       if (session) {
+        console.log("Signing out user before unload");
         await createClient().auth.signOut();
       }
     }

@@ -47,7 +47,6 @@ export async function updateSession(request: NextRequest) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    console.log("proxy update session", url);
     return NextResponse.redirect(url);
   }
 

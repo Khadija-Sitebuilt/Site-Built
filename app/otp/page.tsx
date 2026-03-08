@@ -39,7 +39,7 @@ export default function OTPPage() {
       const { error: signInError } = await createClient().auth.verifyOtp({
         email: email,
         token,
-        type: "recovery",
+        type: "email",
       });
 
       if (signInError) throw signInError;
@@ -126,8 +126,6 @@ export default function OTPPage() {
                   type="text"
                   pattern="^\d{6,8}$"
                   autoComplete="token"
-                  minLength={6}
-                  maxLength={8}
                   inputMode="numeric"
                   required
                   value={token}
