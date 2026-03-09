@@ -23,8 +23,15 @@ export default function DataOperation({
           className,
         )}
       >
-        {options.map((value) => {
-          return <option key={value}>{value}</option>;
+        {options.map((value, index) => {
+          return (
+            <option
+              key={value}
+              className={`${index === 0 ? "pt-4 pb-1" : index === options.length - 1 ? "pt-1 pb-2" : "py-1"} bg-white`}
+            >
+              {value}
+            </option>
+          );
         })}
       </select>
       <ChevronDown className="right-3 absolute w-4 h-4 text-[#717182] pointer-events-none" />

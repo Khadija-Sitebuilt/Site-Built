@@ -312,7 +312,14 @@ export default function DashboardPage() {
           {/* Time Filter */}
           <DataOperation
             value={""}
-            options={["All Time"]}
+            options={[
+              "All Time",
+              "Last 24 hours",
+              "Last 7 Days",
+              "Last 30 Days",
+              "Last 90 Days",
+              "Last 12 Months",
+            ]}
             onChange={() => {}}
             // onChange={(e) => setTime(e.target.value)}
           />
