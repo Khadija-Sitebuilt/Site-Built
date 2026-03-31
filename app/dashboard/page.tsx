@@ -170,6 +170,8 @@ export default function DashboardPage() {
             progress: progress,
             thumbnail: thumbnail,
             fileCount: totalFiles,
+            planCount: planCount,
+            photoCount: photoCount,
             lastUpdated: lastUpdated.toLocaleDateString(),
           };
         });
@@ -312,14 +314,7 @@ export default function DashboardPage() {
           {/* Time Filter */}
           <DataOperation
             value={""}
-            options={[
-              "All Time",
-              "Last 24 hours",
-              "Last 7 Days",
-              "Last 30 Days",
-              "Last 90 Days",
-              "Last 12 Months",
-            ]}
+            options={["All Time"]}
             onChange={() => {}}
             // onChange={(e) => setTime(e.target.value)}
           />

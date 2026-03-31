@@ -42,6 +42,11 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 export interface CreateProjectData {
   name: string;
   description?: string;
+  location?: string;
+  start_date?: string;
+  end_date?: string;
+  project_manager?: string;
+  estimated_budget?: string;
 }
 
 export interface Project {
@@ -49,6 +54,11 @@ export interface Project {
   owner_id: string;
   name: string;
   description: string | null;
+  location?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  project_manager?: string | null;
+  estimated_budget?: string | null;
   created_at: string;
 }
 
@@ -75,6 +85,11 @@ export async function createProject(data: CreateProjectData): Promise<Project> {
       body: JSON.stringify({
         name: data.name,
         description: data.description || "",
+        location: data.location,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        project_manager: data.project_manager,
+        estimated_budget: data.estimated_budget,
       }),
     });
 

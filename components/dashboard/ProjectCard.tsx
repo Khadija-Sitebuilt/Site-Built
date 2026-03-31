@@ -20,6 +20,8 @@ interface ProjectCardProps {
     progress: number;
     thumbnail: string;
     fileCount: number;
+    planCount: number;
+    photoCount: number;
     pendingCount?: number;
     lastUpdated: string;
   };
@@ -149,11 +151,16 @@ export default function ProjectCard({ project, onDelete }: ProjectCardProps) {
         <div className="flex items-center gap-4 mb-4">
           <div className="flex items-center gap-1 text-sm text-gray-600">
             <Floors className="w-4 h-4" />
-            <span>{/* {project.fileCount} */}2 floors</span>
+            <span>
+              {project.planCount} {project.planCount === 1 ? "floor" : "floors"}
+            </span>
           </div>
           <div className="flex items-center gap-1 text-sm text-gray-500">
             <Photos className="w-4 h-4" />
-            <span>{/* {project.lastUpdated} */}156 photos</span>
+            <span>
+              {project.photoCount}{" "}
+              {project.photoCount === 1 ? "photo" : "photos"}
+            </span>
           </div>
         </div>
 

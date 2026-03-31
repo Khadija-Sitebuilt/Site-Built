@@ -11,12 +11,13 @@ export interface Report {
   id?: string | number;
   projectName: string;
   status: "Started" | "Processing" | "Completed";
-  company: string;
-  type: string;
-  date: string;
-  fileSize: string;
-  accuracy: number;
-  photosNumber: number;
+  company?: string;
+  type?: string;
+  date?: string;
+  fileSize?: string;
+  accuracy?: number;
+  photosNumber?: number;
+  fileUrl?: string;
   summary?: string;
 }
 

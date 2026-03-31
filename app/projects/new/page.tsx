@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, HelpCircle, Calendar, MapPin, CheckCircle, FileText, Image as ImageIcon, Crosshair, Rocket } from "lucide-react";
+import { ArrowLeft, ArrowRight, HelpCircle, Calendar, MapPin, CheckCircle, FileText, Image as ImageIcon, Crosshair, Rocket, ChevronLeft, ChevronRight } from "lucide-react";
 import { createProject, uploadPlan, uploadPhoto } from "@/lib/api";
 
 export default function NewProjectPage() {
@@ -38,14 +38,230 @@ export default function NewProjectPage() {
         longitude: string;
     }
     const [calibrationPoints, setCalibrationPoints] = useState<CalibrationPoint[]>([]);
+    const [locationSuggestions, setLocationSuggestions] = useState<
+        Array<{ place_id: number; display_name: string }>
+    >([]);
+    const [locationOpen, setLocationOpen] = useState(false);
+    const [locationLoading, setLocationLoading] = useState(false);
+    const [locationError, setLocationError] = useState("");
+    const locationRequestIdRef = useRef(0);
+
+    const formatDisplayDate = (value: string) => {
+        if (!value) return "Select date";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "Select date";
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+    };
+
+    const DatePicker = ({
+        name,
+        value,
+        onChange,
+        placeholder,
+    }: {
+        name: "startDate" | "endDate";
+        value: string;
+        onChange: (nextValue: string) => void;
+        placeholder?: string;
+    }) => {
+        const [isOpen, setIsOpen] = useState(false);
+        const [viewDate, setViewDate] = useState(() => {
+            return value ? new Date(value) : new Date();
+        });
+
+        const startOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
+        const endOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0);
+        const startDay = startOfMonth.getDay();
+        const daysInMonth = endOfMonth.getDate();
+
+        const handleSelect = (day: number) => {
+            const selected = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+            const iso = selected.toISOString().split("T")[0];
+            onChange(iso);
+            setIsOpen(false);
+        };
+
+        const weeks: Array<Array<number | null>> = [];
+        let currentDay = 1;
+        for (let row = 0; row < 6; row += 1) {
+            const week: Array<number | null> = [];
+            for (let col = 0; col < 7; col += 1) {
+                if (row === 0 && col < startDay) {
+                    week.push(null);
+                } else if (currentDay > daysInMonth) {
+                    week.push(null);
+                } else {
+                    week.push(currentDay);
+                    currentDay += 1;
+                }
+            }
+            weeks.push(week);
+            if (currentDay > daysInMonth) break;
+        }
+
+        const selectedDate = value ? new Date(value) : null;
+
+        return (
+            <div className="relative">
+                <button
+                    type="button"
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    className="w-full flex items-center justify-between pl-10 pr-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-left"
+                >
+                    <span className={`${value ? "text-gray-900" : "text-gray-400"}`}>
+                        {value ? formatDisplayDate(value) : placeholder || "Select date"}
+                    </span>
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                </button>
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+
+                {isOpen && (
+                    <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-xl p-4">
+                        <div className="flex items-center justify-between mb-3">
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))
+                                }
+                                className="p-1 rounded-md hover:bg-gray-100"
+                            >
+                                <ChevronLeft className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <span className="text-sm font-semibold text-gray-900">
+                                {viewDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))
+                                }
+                                className="p-1 rounded-md hover:bg-gray-100"
+                            >
+                                <ChevronRight className="w-4 h-4 text-gray-600" />
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-7 gap-1 text-xs text-gray-500 mb-2">
+                            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                                <div key={day} className="text-center">
+                                    {day}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-7 gap-1 text-sm">
+                            {weeks.flat().map((day, index) => {
+                                if (!day) {
+                                    return <div key={`empty-${index}`} />;
+                                }
+                                const isSelected =
+                                    selectedDate &&
+                                    selectedDate.getFullYear() === viewDate.getFullYear() &&
+                                    selectedDate.getMonth() === viewDate.getMonth() &&
+                                    selectedDate.getDate() === day;
+
+                                return (
+                                    <button
+                                        key={day}
+                                        type="button"
+                                        onClick={() => handleSelect(day)}
+                                        className={`h-9 w-9 rounded-full flex items-center justify-center mx-auto transition-colors ${
+                                            isSelected
+                                                ? "bg-blue-600 text-white"
+                                                : "text-gray-700 hover:bg-blue-50"
+                                        }`}
+                                    >
+                                        {day}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
+        const { name } = e.target;
+        let { value } = e.target;
+
+        if (name === "estimatedBudget") {
+            // Keep only digits and a single decimal point
+            value = value.replace(/[^0-9.]/g, "");
+            const parts = value.split(".");
+            if (parts.length > 2) {
+                value = `${parts[0]}.${parts.slice(1).join("")}`;
+            }
+        }
+
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
     };
+
+    useEffect(() => {
+        const query = formData.location.trim();
+        if (query.length < 3) {
+            setLocationSuggestions([]);
+            setLocationOpen(false);
+            setLocationLoading(false);
+            setLocationError("");
+            return;
+        }
+
+        const requestId = ++locationRequestIdRef.current;
+        const timer = setTimeout(async () => {
+            try {
+                setLocationLoading(true);
+                setLocationError("");
+
+                const params = new URLSearchParams({
+                    format: "jsonv2",
+                    q: query,
+                    addressdetails: "1",
+                    limit: "6",
+                });
+
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?${params.toString()}`,
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch locations");
+                }
+
+                const data = await response.json();
+                if (locationRequestIdRef.current !== requestId) return;
+
+                setLocationSuggestions(
+                    Array.isArray(data)
+                        ? data.map((item: any) => ({
+                            place_id: item.place_id,
+                            display_name: item.display_name,
+                        }))
+                        : [],
+                );
+                setLocationOpen(true);
+            } catch (err: any) {
+                if (locationRequestIdRef.current !== requestId) return;
+                setLocationError("Unable to load suggestions");
+                setLocationSuggestions([]);
+                setLocationOpen(true);
+            } finally {
+                if (locationRequestIdRef.current === requestId) {
+                    setLocationLoading(false);
+                }
+            }
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [formData.location]);
 
     // File Handlers
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +355,12 @@ export default function NewProjectPage() {
             // Create the project in the backend
             const project = await createProject({
                 name: formData.projectName,
-                description: formData.description || `${formData.location}\nStart Date: ${formData.startDate}\nEnd Date: ${formData.endDate}${formData.projectManager ? `\nProject Manager: ${formData.projectManager}` : ''}${formData.estimatedBudget ? `\nBudget: ${formData.estimatedBudget}` : ''}`,
+                description: formData.description || "",
+                location: formData.location || undefined,
+                start_date: formData.startDate || undefined,
+                end_date: formData.endDate || undefined,
+                project_manager: formData.projectManager || undefined,
+                estimated_budget: formData.estimatedBudget || undefined,
             });
 
             setCreatedProjectId(project.id);
@@ -311,9 +532,60 @@ export default function NewProjectPage() {
                                             name="location"
                                             value={formData.location}
                                             onChange={handleInputChange}
+                                            onFocus={() => {
+                                                if (formData.location.trim().length >= 3) {
+                                                    setLocationOpen(true);
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                setTimeout(() => setLocationOpen(false), 150);
+                                            }}
+                                            autoComplete="off"
                                             className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                             placeholder="Enter site address..."
                                         />
+                                        {locationOpen && (
+                                            <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+                                                {locationLoading && (
+                                                    <div className="px-4 py-3 text-sm text-gray-500">
+                                                        Searching locations...
+                                                    </div>
+                                                )}
+                                                {locationError && !locationLoading && (
+                                                    <div className="px-4 py-3 text-sm text-red-500">
+                                                        {locationError}
+                                                    </div>
+                                                )}
+                                                {!locationLoading && !locationError && locationSuggestions.length === 0 && (
+                                                    <div className="px-4 py-3 text-sm text-gray-500">
+                                                        No suggestions found.
+                                                    </div>
+                                                )}
+                                                {!locationLoading && !locationError && locationSuggestions.length > 0 && (
+                                                    <ul className="max-h-56 overflow-auto">
+                                                        {locationSuggestions.map((item) => (
+                                                            <li key={item.place_id}>
+                                                                <button
+                                                                    type="button"
+                                                                    onMouseDown={(event) => event.preventDefault()}
+                                                                    onClick={() => {
+                                                                        setFormData(prev => ({
+                                                                            ...prev,
+                                                                            location: item.display_name,
+                                                                        }));
+                                                                        setLocationOpen(false);
+                                                                        setLocationSuggestions([]);
+                                                                    }}
+                                                                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                                                                >
+                                                                    {item.display_name}
+                                                                </button>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -346,31 +618,31 @@ export default function NewProjectPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Start Date <span className="text-red-500">*</span>
                                     </label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                        <input
-                                            type="date"
-                                            name="startDate"
-                                            value={formData.startDate}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                        />
-                                    </div>
+                                    <DatePicker
+                                        name="startDate"
+                                        value={formData.startDate}
+                                        onChange={(nextValue) =>
+                                            handleInputChange({
+                                                target: { name: "startDate", value: nextValue },
+                                            } as React.ChangeEvent<HTMLInputElement>)
+                                        }
+                                        placeholder="Pick start date"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         End Date <span className="text-red-500">*</span>
                                     </label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                        <input
-                                            type="date"
-                                            name="endDate"
-                                            value={formData.endDate}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                        />
-                                    </div>
+                                    <DatePicker
+                                        name="endDate"
+                                        value={formData.endDate}
+                                        onChange={(nextValue) =>
+                                            handleInputChange({
+                                                target: { name: "endDate", value: nextValue },
+                                            } as React.ChangeEvent<HTMLInputElement>)
+                                        }
+                                        placeholder="Pick end date"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -397,12 +669,15 @@ export default function NewProjectPage() {
                                         Estimated Budget
                                     </label>
                                     <input
-                                        type="text"
+                                        type="number"
+                                        inputMode="decimal"
+                                        min="0"
+                                        step="0.01"
                                         name="estimatedBudget"
                                         value={formData.estimatedBudget}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                        placeholder="e.g., $500,000"
+                                        placeholder="e.g., 500000"
                                     />
                                 </div>
                             </div>

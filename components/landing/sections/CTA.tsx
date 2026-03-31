@@ -54,7 +54,7 @@ export function CTA() {
           >
             <div className="flex gap-2 h-[60px] items-center justify-center px-5 py-[10px] relative w-full">
               <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-sm md:text-base text-white">
-                Start free trial
+                Get Started for Free
               </span>
               <ArrowIcon
                 className="relative shrink-0 text-white group-hover:translate-x-0.5 transition-all"

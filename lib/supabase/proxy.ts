@@ -12,6 +12,7 @@ export async function updateSession(request: NextRequest) {
     "/reset-password",
     "/otp",
     "/auth",
+    "/demo",
   ];
 
   // Do not run code between createServerClient and

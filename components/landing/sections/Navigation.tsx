@@ -81,7 +81,7 @@ export function Navigation() {
               className="group bg-blue-600 box-border flex gap-2 h-[61px] items-center justify-center px-5 py-2.5 relative rounded-4xl shrink-0 transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25"
             >
               <div className="font-['Inter',sans-serif] font-semibold leading-[normal] ml-[9px] not-italic relative shrink-0 text-sm md:text-base text-white">
-                Get Started
+                Get Started for Free
               </div>
               <ArrowIcon
                 className="relative shrink-0 text-white group-hover:translate-x-0.5 transition-all mr-[9px]"
@@ -89,7 +89,7 @@ export function Navigation() {
               />
             </Link>
             <Link
-              href="/login"
+              href="/demo"
               className="group border border-blue-600 border-solid box-border flex gap-2 h-[61px] items-center justify-center px-5 py-2.5 relative rounded-4xl shrink-0 transition-all duration-200 hover:bg-blue-50 hover:border-blue-700"
             >
               <div className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-sm md:text-base text-blue-600 group-hover:text-blue-700 transition-colors">
@@ -151,7 +151,7 @@ export function Navigation() {
             >
               <div className="flex gap-2 h-[39px] items-center justify-center px-5 py-[10px] relative">
                 <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-[16px] text-white">
-                  Get Started
+                  Get Started for Free
                 </span>
                 <ArrowIcon
                   className="relative shrink-0 text-white group-hover:translate-x-0.5 transition-all"
@@ -160,7 +160,7 @@ export function Navigation() {
               </div>
             </Link>
             <Link
-              href="/login"
+              href="/demo"
               className="group border border-blue-600 border-solid h-[39px] relative rounded-[30px] transition-all duration-200 hover:bg-blue-50 hover:border-blue-700"
             >
               <div className="flex gap-2 h-[39px] items-center justify-center px-5 py-[10px] relative">

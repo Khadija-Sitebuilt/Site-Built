@@ -76,7 +76,7 @@ export function Hero() {
             >
               <div className="flex gap-2 h-[60px] items-center justify-center px-5 py-[10px] relative">
                 <span className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-sm md:text-base text-white">
-                  Get Started for free
+                  Get Started for Free
                 </span>
                 <ArrowIcon
                   className="relative shrink-0 text-white group-hover:translate-x-0.5 transition-all"
@@ -85,7 +85,7 @@ export function Hero() {
               </div>
             </Link>
             <Link
-              href="#demo"
+              href="/demo"
               className="group border border-blue-600 border-solid h-[60px] w-full sm:w-auto relative rounded-[30px] shrink-0 transition-all duration-200 hover:bg-blue-50 hover:border-blue-700"
             >
               <div className="flex gap-2.5 h-[60px] items-center justify-center px-5 py-[10px] relative">

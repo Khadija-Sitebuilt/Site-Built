@@ -164,6 +164,8 @@ export default function ProjectsPage() {
             progress: progress,
             thumbnail: thumbnail,
             fileCount: totalFiles,
+            planCount: planCount,
+            photoCount: photoCount,
             lastUpdated: lastUpdated.toLocaleDateString(),
           };
         });

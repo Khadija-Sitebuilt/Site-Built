@@ -243,6 +243,14 @@ function LoginContent() {
                   Create an account
                 </Link>
               </div>
+              <div>
+                <Link
+                  href="/demo"
+                  className="inline-flex items-center justify-center w-full rounded-xl border border-blue-600 px-4 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+                >
+                  Continue as Demo
+                </Link>
+              </div>
             </div>
           </div>
         </div>
