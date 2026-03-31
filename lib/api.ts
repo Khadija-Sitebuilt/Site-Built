@@ -793,6 +793,7 @@ export interface Report {
   project_id: string;
   file_url: string;
   file_type: string;
+  accuracy?: number | null;
   created_at: string;
 }
 

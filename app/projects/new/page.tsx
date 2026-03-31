@@ -62,11 +62,13 @@ export default function NewProjectPage() {
         value,
         onChange,
         placeholder,
+        minDate,
     }: {
         name: "startDate" | "endDate";
         value: string;
         onChange: (nextValue: string) => void;
         placeholder?: string;
+        minDate?: string;
     }) => {
         const [isOpen, setIsOpen] = useState(false);
         const [viewDate, setViewDate] = useState(() => {
@@ -78,8 +80,13 @@ export default function NewProjectPage() {
         const startDay = startOfMonth.getDay();
         const daysInMonth = endOfMonth.getDate();
 
+        const min = minDate ? new Date(minDate) : null;
+
         const handleSelect = (day: number) => {
             const selected = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+            if (min && selected < new Date(min.getFullYear(), min.getMonth(), min.getDate())) {
+                return;
+            }
             const iso = selected.toISOString().split("T")[0];
             onChange(iso);
             setIsOpen(false);
@@ -164,15 +171,32 @@ export default function NewProjectPage() {
                                     selectedDate.getMonth() === viewDate.getMonth() &&
                                     selectedDate.getDate() === day;
 
+                                const isDisabled = Boolean(
+                                    min &&
+                                        new Date(
+                                            viewDate.getFullYear(),
+                                            viewDate.getMonth(),
+                                            day,
+                                        ) <
+                                            new Date(
+                                                min.getFullYear(),
+                                                min.getMonth(),
+                                                min.getDate(),
+                                            ),
+                                );
+
                                 return (
                                     <button
                                         key={day}
                                         type="button"
                                         onClick={() => handleSelect(day)}
+                                        disabled={isDisabled}
                                         className={`h-9 w-9 rounded-full flex items-center justify-center mx-auto transition-colors ${
                                             isSelected
                                                 ? "bg-blue-600 text-white"
-                                                : "text-gray-700 hover:bg-blue-50"
+                                                : isDisabled
+                                                    ? "text-gray-300 cursor-not-allowed"
+                                                    : "text-gray-700 hover:bg-blue-50"
                                         }`}
                                     >
                                         {day}
@@ -199,10 +223,21 @@ export default function NewProjectPage() {
             }
         }
 
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => {
+            if (name === "startDate") {
+                const shouldClearEnd =
+                    prev.endDate && new Date(prev.endDate) < new Date(value);
+                return {
+                    ...prev,
+                    startDate: value,
+                    endDate: shouldClearEnd ? "" : prev.endDate,
+                };
+            }
+            return {
+                ...prev,
+                [name]: value
+            };
+        });
     };
 
     useEffect(() => {
@@ -330,14 +365,29 @@ export default function NewProjectPage() {
         formData.projectName &&
         formData.location &&
         formData.startDate &&
-        formData.endDate
+        formData.endDate &&
+        new Date(formData.endDate) >= new Date(formData.startDate)
     );
 
     // Navigation Handlers
     const handleNext = () => {
-        if (currentStep < totalSteps) {
-            setCurrentStep(prev => prev + 1);
+        if (currentStep >= totalSteps) return;
+
+        if (currentStep === 1 && !isStep1Valid) {
+            setError("Please complete all required project details.");
+            return;
         }
+        if (currentStep === 2 && !floorPlanFile) {
+            setError("Please upload a floor plan before continuing.");
+            return;
+        }
+        if (currentStep === 3 && photos.length === 0) {
+            setError("Please upload at least one photo before continuing.");
+            return;
+        }
+
+        setError("");
+        setCurrentStep(prev => prev + 1);
     };
 
     const handleBack = () => {
@@ -641,6 +691,7 @@ export default function NewProjectPage() {
                                                 target: { name: "endDate", value: nextValue },
                                             } as React.ChangeEvent<HTMLInputElement>)
                                         }
+                                        minDate={formData.startDate || undefined}
                                         placeholder="Pick end date"
                                     />
                                 </div>
