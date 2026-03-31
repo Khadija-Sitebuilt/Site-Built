@@ -58,6 +58,14 @@ export default function DashboardPage() {
   const { searchQuery, setSearchQuery } = useSearch();
   const { hasProjects, setHasProjects } = useProjectsChecking();
   const { statusFilter, setStatusFilter } = useStatus();
+  const timeFilterOptions = [
+    "All Time",
+    "Today",
+    "Last 7 days",
+    "Last 30 days",
+    "This year",
+  ];
+  const [timeFilter, setTimeFilter] = useState(timeFilterOptions[0]);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -172,6 +180,7 @@ export default function DashboardPage() {
             fileCount: totalFiles,
             planCount: planCount,
             photoCount: photoCount,
+            lastUpdatedAt: lastUpdated,
             lastUpdated: lastUpdated.toLocaleDateString(),
           };
         });
@@ -230,7 +239,32 @@ export default function DashboardPage() {
     const matchesStatus =
       statusFilter === "All Status" ||
       project.status.toLowerCase() === statusFilter.toLowerCase();
-    return matchesSearch && matchesStatus;
+    const updatedAt =
+      project.lastUpdatedAt instanceof Date
+        ? project.lastUpdatedAt
+        : new Date(project.lastUpdatedAt || Date.now());
+    const now = new Date();
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    let matchesTime = true;
+    if (timeFilter === "Today") {
+      matchesTime = updatedAt >= startOfToday;
+    } else if (timeFilter === "Last 7 days") {
+      const cutoff = new Date(now);
+      cutoff.setDate(now.getDate() - 7);
+      matchesTime = updatedAt >= cutoff;
+    } else if (timeFilter === "Last 30 days") {
+      const cutoff = new Date(now);
+      cutoff.setDate(now.getDate() - 30);
+      matchesTime = updatedAt >= cutoff;
+    } else if (timeFilter === "This year") {
+      const cutoff = new Date(now.getFullYear(), 0, 1);
+      matchesTime = updatedAt >= cutoff;
+    }
+    return matchesSearch && matchesStatus && matchesTime;
   });
 
   // Recently viewed projects (first 3)
@@ -313,10 +347,9 @@ export default function DashboardPage() {
 
           {/* Time Filter */}
           <DataOperation
-            value={""}
-            options={["All Time"]}
-            onChange={() => {}}
-            // onChange={(e) => setTime(e.target.value)}
+            value={timeFilter}
+            options={timeFilterOptions}
+            onChange={(e) => setTimeFilter(e.target.value)}
           />
 
           {/* Sort */}

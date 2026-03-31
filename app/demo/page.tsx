@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-
-const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL || "";
-const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD || "";
 const backendUrl =
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   "https://sitebuilt-backend.onrender.com";
@@ -17,66 +14,103 @@ export default function DemoPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [debugMessage, setDebugMessage] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
+  const sessionKey = "sitebuilt_demo_session_v1";
 
   useEffect(() => {
     let cancelled = false;
 
     async function signInDemo() {
-      if (!demoEmail || !demoPassword) {
-        if (!cancelled) {
-          setStatus("error");
-          setErrorMessage(
-            "Demo is not configured yet. Please contact us or sign in.",
-          );
-          setDebugMessage(
-            `Demo email set: ${demoEmail ? "yes" : "no"} | Demo password set: ${demoPassword ? "yes" : "no"}`,
-          );
+      const supabase = createClient();
+
+      const getStoredSession = () => {
+        try {
+          const raw = localStorage.getItem(sessionKey);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (!parsed?.email || !parsed?.password || !parsed?.expiresAt) {
+            return null;
+          }
+          if (Date.now() > parsed.expiresAt) {
+            localStorage.removeItem(sessionKey);
+            return null;
+          }
+          return parsed as {
+            email: string;
+            password: string;
+            expiresAt: number;
+          };
+        } catch {
+          return null;
         }
-        return;
-      }
+      };
 
-      const { data, error } = await createClient().auth.signInWithPassword({
-        email: demoEmail,
-        password: demoPassword,
-      });
-
-      if (cancelled) {
-        return;
-      }
-
-      if (error || !data.user) {
-        setStatus("error");
-        setErrorMessage(
-          error?.message || "Unable to sign in with demo credentials.",
+      const storeSession = (email: string, password: string) => {
+        const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+        localStorage.setItem(
+          sessionKey,
+          JSON.stringify({ email, password, expiresAt }),
         );
-        setDebugMessage(
-          [
-            `Demo email set: ${demoEmail ? "yes" : "no"}`,
-            `Demo password set: ${demoPassword ? "yes" : "no"}`,
-            error?.message ? `Supabase error: ${error.message}` : "",
-            error?.status ? `Supabase status: ${error.status}` : "",
-            error?.name ? `Supabase name: ${error.name}` : "",
-          ]
-            .filter(Boolean)
-            .join(" | "),
+      };
+
+      const attemptSignIn = async (email: string, password: string) => {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        return { data, error };
+      };
+
+      const stored = getStoredSession();
+      if (stored) {
+        const { data, error } = await attemptSignIn(
+          stored.email,
+          stored.password,
         );
-        return;
+        if (!cancelled && !error && data.user) {
+          router.push("/dashboard");
+          return;
+        }
+        localStorage.removeItem(sessionKey);
       }
 
       try {
-        await fetch(`${backendUrl}/demo/reset`, {
+        const response = await fetch(`${backendUrl}/demo/session`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-User-Id": data.user.id,
-            "X-User-Email": data.user.email || "",
-          },
+          headers: { "Content-Type": "application/json" },
         });
-      } catch (resetError) {
-        console.error("Demo reset failed:", resetError);
-      }
+        if (!response.ok) {
+          throw new Error(`Demo session failed (${response.status})`);
+        }
+        const credentials = await response.json();
+        const { data, error } = await attemptSignIn(
+          credentials.email,
+          credentials.password,
+        );
 
-      router.push("/dashboard");
+        if (cancelled) {
+          return;
+        }
+
+        if (error || !data.user) {
+          setStatus("error");
+          setErrorMessage(
+            error?.message || "Unable to sign in to demo workspace.",
+          );
+          setDebugMessage(
+            error?.message ? `Supabase error: ${error.message}` : "",
+          );
+          return;
+        }
+
+        storeSession(credentials.email, credentials.password);
+        router.push("/dashboard");
+      } catch (sessionError: any) {
+        if (cancelled) return;
+        setStatus("error");
+        setErrorMessage(
+          sessionError?.message || "Unable to create demo session.",
+        );
+      }
     }
 
     signInDemo();
