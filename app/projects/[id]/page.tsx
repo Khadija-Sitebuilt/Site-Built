@@ -10,6 +10,7 @@ import PhotosTab from "@/components/project/tabs/PhotosTab";
 import ReviewTab from "@/components/project/tabs/ReviewTab";
 import ExportTab from "@/components/project/tabs/ExportTab";
 import ProjectDetailSkeleton from "@/components/project/ProjectDetailSkeleton";
+import ProjectAI from "@/components/project/ProjectAI";
 import type { Project } from "@/lib/api";
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -209,6 +210,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                     <dd className="text-2xl font-bold text-gray-900">{photoCount}</dd>
                                 </div>
                             </div>
+
+                            <ProjectAI projectId={project.id} />
                         </div>
                     </div>
                 );

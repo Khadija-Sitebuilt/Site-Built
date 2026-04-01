@@ -6,7 +6,11 @@ import { images } from "../assets";
 import { ArrowIcon } from "../shared/ArrowIcon";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-export function Hero() {
+type HeroProps = {
+  onOpenDemo: () => void;
+};
+
+export function Hero({ onOpenDemo }: HeroProps) {
   const headingAnim = useScrollAnimation({ threshold: 0.2 });
 
   return (
@@ -84,8 +88,9 @@ export function Hero() {
                 />
               </div>
             </Link>
-            <Link
-              href="/demo"
+            <button
+              type="button"
+              onClick={onOpenDemo}
               className="group border border-blue-600 border-solid h-[60px] w-full sm:w-auto relative rounded-[30px] shrink-0 transition-all duration-200 hover:bg-blue-50 hover:border-blue-700"
             >
               <div className="flex gap-2.5 h-[60px] items-center justify-center px-5 py-[10px] relative">
@@ -97,7 +102,7 @@ export function Hero() {
                   size={24}
                 />
               </div>
-            </Link>
+            </button>
           </div>
         </div>
         <div

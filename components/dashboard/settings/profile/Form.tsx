@@ -31,6 +31,25 @@ export default function Form() {
           return;
         }
 
+        const userMetadata = (user.user_metadata || {}) as {
+          full_name?: string;
+          name?: string;
+          phone?: string;
+        };
+
+        const authFullName =
+          userMetadata.full_name?.trim() || userMetadata.name?.trim() || "";
+        const authNameParts = authFullName
+          ? authFullName.split(" ")
+          : ["", ""];
+
+        setFormData({
+          firstName: authNameParts[0] || "",
+          lastName: authNameParts.slice(1).join(" ") || "",
+          email: user.email || "",
+          phone: userMetadata.phone || "",
+        });
+
         const { data, error: fetchError } = await createClient()
           .from("users")
           .select("full_name, email, phone_number")
@@ -50,8 +69,8 @@ export default function Form() {
           setFormData({
             firstName: nameParts[0] || "",
             lastName: nameParts.slice(1).join(" ") || "",
-            email: data.email || "",
-            phone: data.phone_number || "",
+            email: data.email || user.email || "",
+            phone: data.phone_number || userMetadata.phone || "",
           });
         }
         setLoading(false);

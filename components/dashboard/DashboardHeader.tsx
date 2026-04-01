@@ -26,33 +26,53 @@ export default function DashboardHeader({
 
         if (authError || !user) return;
 
+        const userMetadata = (user.user_metadata || {}) as {
+          full_name?: string;
+          name?: string;
+        };
+
+        const authFullName =
+          userMetadata.full_name?.trim() ||
+          userMetadata.name?.trim() ||
+          "";
+
+        const buildInitials = (name: string, email?: string | null) => {
+          if (name && name.trim().length > 0) {
+            const parts = name.trim().split(/\s+/);
+            const first = parts[0]?.[0] ?? "";
+            const last =
+              parts.length > 1 ? (parts[parts.length - 1][0] ?? "") : "";
+            return (first + last).toUpperCase() || first.toUpperCase() || "JD";
+          }
+          if (email) {
+            const emailFirstChar = email[0] ?? "";
+            return emailFirstChar.toUpperCase() || "JD";
+          }
+          return "JD";
+        };
+
+        let derivedInitials = buildInitials(authFullName, user.email);
+        let nextAvatarUrl: string | null = null;
+
         const { data, error } = await createClient()
           .from("users")
           .select("full_name, email, avatar_url")
           .eq("auth_uid", user.id)
           .single();
 
-        if (error || !data) return;
-
-        const fullName = data.full_name as string | null;
-        let derivedInitials = "JD";
-
-        if (fullName && fullName.trim().length > 0) {
-          const parts = fullName.trim().split(/\s+/);
-          const first = parts[0]?.[0] ?? "";
-          const last =
-            parts.length > 1 ? (parts[parts.length - 1][0] ?? "") : "";
-          derivedInitials =
-            (first + last).toUpperCase() || first.toUpperCase() || "JD";
-        } else if (data.email) {
-          const emailFirstChar = (data.email as string)[0] ?? "";
-          derivedInitials = emailFirstChar.toUpperCase() || "JD";
+        if (!error && data) {
+          const fullName = data.full_name as string | null;
+          const dbEmail = (data.email as string | null) ?? user.email ?? null;
+          derivedInitials = buildInitials(fullName || "", dbEmail);
+          if (data.avatar_url) {
+            nextAvatarUrl = data.avatar_url as string;
+          }
         }
 
         setInitials(derivedInitials);
 
-        if (data.avatar_url) {
-          setAvatarUrl(data.avatar_url as string);
+        if (nextAvatarUrl) {
+          setAvatarUrl(nextAvatarUrl);
         }
       } catch (e) {
         // Fail silently and keep default initials

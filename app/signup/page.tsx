@@ -61,6 +61,8 @@ export default function SignupPage() {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
             full_name: formData.name,
+            role: formData.role,
+            company: formData.company || null,
           },
         },
       });
@@ -80,14 +82,19 @@ export default function SignupPage() {
       if (data.user) {
         // Create user profile record
         try {
-          await createClient().from("users").insert({
-            id: crypto.randomUUID(),
-            auth_uid: data.user.id,
-            email: formData.email,
-            full_name: formData.name,
-            role: formData.role,
-            company: formData.company,
-          });
+          await createClient()
+            .from("users")
+            .upsert(
+              {
+                id: crypto.randomUUID(),
+                auth_uid: data.user.id,
+                email: formData.email,
+                full_name: formData.name,
+                role: formData.role,
+                company: formData.company || null,
+              },
+              { onConflict: "auth_uid" },
+            );
         } catch (profileErr) {
           console.error("Error creating user profile:", profileErr);
         }

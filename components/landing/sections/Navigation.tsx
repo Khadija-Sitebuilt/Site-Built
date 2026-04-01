@@ -7,7 +7,11 @@ import { Logo } from "../shared/Logo";
 import { NavLink } from "../shared/NavLink";
 import { ArrowIcon } from "../shared/ArrowIcon";
 
-export function Navigation() {
+type NavigationProps = {
+  onOpenDemo: () => void;
+};
+
+export function Navigation({ onOpenDemo }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
 
@@ -88,8 +92,9 @@ export function Navigation() {
                 size={24}
               />
             </Link>
-            <Link
-              href="/demo"
+            <button
+              type="button"
+              onClick={onOpenDemo}
               className="group border border-blue-600 border-solid box-border flex gap-2 h-[61px] items-center justify-center px-5 py-2.5 relative rounded-4xl shrink-0 transition-all duration-200 hover:bg-blue-50 hover:border-blue-700"
             >
               <div className="font-['Inter',sans-serif] font-semibold leading-[normal] not-italic relative shrink-0 text-sm md:text-base text-blue-600 group-hover:text-blue-700 transition-colors">
@@ -99,7 +104,7 @@ export function Navigation() {
                 className="relative shrink-0 text-blue-600 group-hover:text-blue-700 group-hover:translate-x-0.5 transition-all"
                 size={24}
               />
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -159,8 +164,12 @@ export function Navigation() {
                 />
               </div>
             </Link>
-            <Link
-              href="/demo"
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenDemo();
+              }}
               className="group border border-blue-600 border-solid h-[39px] relative rounded-[30px] transition-all duration-200 hover:bg-blue-50 hover:border-blue-700"
             >
               <div className="flex gap-2 h-[39px] items-center justify-center px-5 py-[10px] relative">
@@ -172,7 +181,7 @@ export function Navigation() {
                   size={18}
                 />
               </div>
-            </Link>
+            </button>
           </div>
         </div>
       )}

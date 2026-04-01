@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, HelpCircle, Calendar, MapPin, CheckCircle, FileText, Image as ImageIcon, Crosshair, Rocket, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, HelpCircle, Calendar, MapPin, CheckCircle, FileText, Image as ImageIcon, Crosshair, Rocket, ChevronLeft, ChevronRight, Wand2 } from "lucide-react";
 import { createProject, uploadPlan, uploadPhoto } from "@/lib/api";
 
 export default function NewProjectPage() {
@@ -13,6 +13,8 @@ export default function NewProjectPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState("");
     const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
+    const [descriptionEnhancing, setDescriptionEnhancing] = useState(false);
+    const [descriptionError, setDescriptionError] = useState("");
     const totalSteps = 5;
 
     // Form State
@@ -238,6 +240,36 @@ export default function NewProjectPage() {
                 [name]: value
             };
         });
+    };
+
+    const handleImproveDescription = async () => {
+        setDescriptionEnhancing(true);
+        setDescriptionError("");
+        try {
+            const response = await fetch("/api/ai/improve-description", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    projectName: formData.projectName,
+                    location: formData.location,
+                    description: formData.description,
+                }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data?.error || "Failed to improve description");
+            }
+
+            setFormData(prev => ({
+                ...prev,
+                description: data.improved || prev.description,
+            }));
+        } catch (err: any) {
+            setDescriptionError(err.message || "Failed to improve description");
+        } finally {
+            setDescriptionEnhancing(false);
+        }
     };
 
     useEffect(() => {
@@ -640,9 +672,20 @@ export default function NewProjectPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Project Description
-                                        <HelpCircle className="w-4 h-4 text-gray-400 inline-block ml-1" />
+                                    <label className="flex items-center justify-between text-sm font-medium text-gray-700 mb-2">
+                                        <span className="flex items-center">
+                                            Project Description
+                                            <HelpCircle className="w-4 h-4 text-gray-400 inline-block ml-1" />
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={handleImproveDescription}
+                                            disabled={descriptionEnhancing}
+                                            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                                        >
+                                            <Wand2 className="w-3.5 h-3.5" />
+                                            {descriptionEnhancing ? "Improving..." : "Improve with AI"}
+                                        </button>
                                     </label>
                                     <textarea
                                         rows={3}
@@ -652,6 +695,11 @@ export default function NewProjectPage() {
                                         className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                                         placeholder="Describe the project objectives, special requirements, or any additional context..."
                                     />
+                                    {descriptionError && (
+                                        <div className="mt-2 text-xs text-red-600">
+                                            {descriptionError}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
